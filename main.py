@@ -18,7 +18,10 @@ class Index(webapp2.RequestHandler):
 
         # build the response string
         response = "<h1>Movie of the Day</h1>"
-        response += "<ul><li>" + movie + "</li></ul>"
+        response += "<p>" + movie + "</p>"
+
+        # TODO: pick a different random movie, and display it under
+        # the heading "<h1>Tommorrow's Movie</h1>"
 
         self.response.write(response)
 
