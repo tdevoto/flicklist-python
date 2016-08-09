@@ -14,9 +14,8 @@ class Index(webapp2.RequestHandler):
         return movies[randomIdx]
 
     def get(self):
-        movie = self.getRandomMovie()
-
         # add Movie of the Day to the response string
+        movie = self.getRandomMovie()
         response = "<h1>Movie of the Day</h1>"
         response += "<p>" + movie + "</p>"
 
