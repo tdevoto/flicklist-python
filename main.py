@@ -3,29 +3,54 @@ import random
 
 class Index(webapp2.RequestHandler):
 
-    def getRandomMovie(self):
-
-        # list of movies to select from
-        movies = ["The Big Lebowski", "Blue Velvet", "Toy Story", "Star Wars", "Amelie"]
-
-        # randomly choose one of the movies
-        randomIdx = random.randrange(len(movies))
-
-        return movies[randomIdx]
-
     def get(self):
-        # add Movie of the Day to the response string
-        movie = self.getRandomMovie()
-        response = "<h1>Movie of the Day</h1>"
-        response += "<p>" + movie + "</p>"
+        response = "<h1>FlickList</h1>"
+        response += "<h3>Add a new movie to your Watchlist:</h3>"
 
-        # add Tomorrow's Movie to the response string
-        tomorrow_movie = self.getRandomMovie()
-        response += "<h1>Tomorrow's Movie</h1>"
-        response += "<p>" + tomorrow_movie + "</p>"
+        # create a form for user to add a new movie
+        response += """
+        <form action="/addmovie" method="post">
+            <input type="text" name="new-movie"/>
+            <input type="submit" value="Add"/>
+        </form>
+        """
+
+        # TODO 1
+        # Add another form so the user can delete a movie from their list.
+
+
+        # TODO 4
+        # Once you have the basic version working, modify the form so that it uses
+        # a dropdown <select> instead of a text box <input type="text">.
+
 
         self.response.write(response)
 
+
+class AddMovie(webapp2.RequestHandler):
+
+    def post(self):
+        # look inside the request to figure out what the user typed
+        new_movie = self.request.get("new_movie")
+
+        # build response content
+        new_movie_element = "<strong>" + new_movie + "</strong>"
+        sentence = new_movie_element + " has been added to your Watchlist!"
+        header = "<h1>Thanks!</h1>"
+        response = header + "<p>" + sentence + "</p>"
+
+        self.response.write(response)
+
+
+# TODO 2
+# Add a new handler class called DeleteMovie, to receive and handle the delete request.
+# The user should see a message like "Thanks! ___ has been deleted from you watchlist".
+
+
+
+# TODO 3
+# Add your delete route to the app, by adding another tuple to the list below.
 app = webapp2.WSGIApplication([
-    ('/', Index)
+    ('/', Index),
+    ('/addmovie', AddMovie)
 ], debug=True)
