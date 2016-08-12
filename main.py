@@ -31,7 +31,7 @@ class AddMovie(webapp2.RequestHandler):
 
     def post(self):
         # look inside the request to figure out what the user typed
-        new_movie = self.request.get("new_movie")
+        new_movie = self.request.get("new-movie")
 
         # build response content
         new_movie_element = "<strong>" + new_movie + "</strong>"
