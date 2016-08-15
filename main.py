@@ -39,16 +39,24 @@ class Index(webapp2.RequestHandler):
         </form>
         """
 
-        # TODO 1
-        # Include another form so the user can "cross off" a movie from their list.
+        # a form for crossing off movies
+        crossoff_form = """
+        <form action="/cross-off" method="post">
+            <label>
+                I want to cross off
+                <select name="crossed-off-movie"/>
+                    <option value="Star Wars">Star Wars</option>
+                    <option value="Minions">Minions</option>
+                    <option value="Freaky Friday">Freaky Friday</option>
+                    <option value="My Favorite Martian">My Favorite Martian</option>
+                </select>
+                from my watchlist.
+            </label>
+            <input type="submit" value="Cross It Off"/>
+        </form>
+        """
 
-
-        # TODO 4 (Extra Credit)
-        # modify your form to use a dropdown (<select>) instead a
-        # text box (<input type="text"/>)
-
-
-        response = page_header + edit_header + add_form + page_footer
+        response = page_header + edit_header + add_form + crossoff_form + page_footer
         self.response.write(response)
 
 
@@ -73,12 +81,20 @@ class AddMovie(webapp2.RequestHandler):
 # Create a new RequestHandler class called CrossOffMovie, to receive and
 # handle the request from your 'cross-off' form. The user should see a message like:
 # "Star Wars has been crossed off your watchlist".
+class CrossOffMovie(webapp2.RequestHandler):
 
+    def post(self):
+        crossed_off_movie = self.request.get("crossed-off-movie")
+        crossed_off_movie_element = "<strike>" + crossed_off_movie + "</strike>"
+        confirmation = crossed_off_movie_element + " has been crossed off your Watchlist."
+        response = page_header + "<p>" + confirmation + "</p>" + page_footer
+        self.response.write(response)
 
 
 # TODO 3
 # Include a route for your cross-off handler, by adding another tuple to the list below.
 app = webapp2.WSGIApplication([
     ('/', Index),
-    ('/add', AddMovie)
+    ('/add', AddMovie),
+    ('/cross-off', CrossOffMovie)
 ], debug=True)
