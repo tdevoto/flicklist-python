@@ -82,6 +82,9 @@ class AddMovie(webapp2.RequestHandler):
 # handle the request from your 'cross-off' form. The user should see a message like:
 # "Star Wars has been crossed off your watchlist".
 class CrossOffMovie(webapp2.RequestHandler):
+    """ Handles requests coming in to '/cross-off'
+        e.g. www.flicklist.com/cross-off
+    """
 
     def post(self):
         crossed_off_movie = self.request.get("crossed-off-movie")
