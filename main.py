@@ -77,25 +77,24 @@ class AddMovie(webapp2.RequestHandler):
         self.response.write(response)
 
 
-# TODO 2
-# Create a new RequestHandler class called CrossOffMovie, to receive and
-# handle the request from your 'cross-off' form. The user should see a message like:
-# "Star Wars has been crossed off your watchlist".
+
 class CrossOffMovie(webapp2.RequestHandler):
     """ Handles requests coming in to '/cross-off'
         e.g. www.flicklist.com/cross-off
     """
 
     def post(self):
+        # look inside the request to figure out what the user typed
         crossed_off_movie = self.request.get("crossed-off-movie")
+
+        # build response content
         crossed_off_movie_element = "<strike>" + crossed_off_movie + "</strike>"
         confirmation = crossed_off_movie_element + " has been crossed off your Watchlist."
+
         response = page_header + "<p>" + confirmation + "</p>" + page_footer
         self.response.write(response)
 
 
-# TODO 3
-# Include a route for your cross-off handler, by adding another tuple to the list below.
 app = webapp2.WSGIApplication([
     ('/', Index),
     ('/add', AddMovie),
