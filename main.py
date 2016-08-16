@@ -56,7 +56,8 @@ class Index(webapp2.RequestHandler):
         </form>
         """
 
-        response = page_header + edit_header + add_form + crossoff_form + page_footer
+        page_content = edit_header + add_form + crossoff_form
+        response = page_header + page_content + page_footer
         self.response.write(response)
 
 
