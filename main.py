@@ -77,8 +77,9 @@ class Index(webapp2.RequestHandler):
         error = self.request.get("error")
         error_element = "<p class='error'>" + error + "</p>" if error else ""
 
-        content = edit_header + add_form + crossoff_form + error_element
-        response = page_header + content + page_footer
+        # combine all the pieces to build the content of our response
+        main_content = edit_header + add_form + crossoff_form + error_element
+        response = page_header + main_content + page_footer
         self.response.write(response)
 
 
@@ -90,6 +91,19 @@ class AddMovie(webapp2.RequestHandler):
     def post(self):
         # look inside the request to figure out what the user typed
         new_movie = self.request.get("new-movie")
+
+
+        # TODO 1
+        # 'escape' the user's input so that if they type HMTL, it doesn't mess up our site
+
+
+        # TODO 2
+        # if the user typed nothing at all, redirect and yell at them
+
+
+        # TODO 3
+        # if the user wants to add a terrible movie, redirect and yell at them
+
 
         # build response content
         new_movie_element = "<strong>" + new_movie + "</strong>"
@@ -107,18 +121,20 @@ class CrossOffMovie(webapp2.RequestHandler):
         # look inside the request to figure out what the user typed
         crossed_off_movie = self.request.get("crossed-off-movie")
 
-        if crossed_off_movie in getCurrentWatchlist():
-            # build response content
-            crossed_off_movie_element = "<strike>" + crossed_off_movie + "</strike>"
-            confirmation = crossed_off_movie_element + " has been crossed off your Watchlist."
-            response = page_header + "<p>" + confirmation + "</p>" + page_footer
-            self.response.write(response)
-        else:
-            # if user tried to cross off a movie that wasn't in their list,
-            # then we redirect back to the front page and yell at thme
+        if (crossed_off_movie in getCurrentWatchlist()) == False:
+            # the user tried to cross off a movie that isn't in their list,
+            # so we redirect back to the front page and yell at them
             error_message = crossed_off_movie + " is not in your Watchlist, so you can't cross it off!"
             escaped_messsage = cgi.escape(error_message, quote=True)
+
+            # redirect to homepage, and include error as a query parameter in the URL
             self.redirect("/?error=" + escaped_messsage)
+
+        # if we didn't redirect by now, then all is well
+        crossed_off_movie_element = "<strike>" + crossed_off_movie + "</strike>"
+        confirmation = crossed_off_movie_element + " has been crossed off your Watchlist."
+        response = page_header + "<p>" + confirmation + "</p>" + page_footer
+        self.response.write(response)
 
 
 app = webapp2.WSGIApplication([
