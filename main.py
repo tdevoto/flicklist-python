@@ -27,9 +27,9 @@ page_footer = """
 
 
 def getCurrentWatchlist():
-    """ Returns the user's current watchlist
-    """
+    """ Returns the user's current watchlist """
 
+    # for now, we are just pretending
     return [ "Star Wars 2", "Minions", "Freaky Friday", "My Favorite Martian" ]
 
 
@@ -54,7 +54,8 @@ class Index(webapp2.RequestHandler):
         </form>
         """
 
-        # a form from crossing off movies
+        # a form for crossing off movies
+        # (first we build a dropdown from the current watchlist items)
         crossoff_options = ""
         for movie in getCurrentWatchlist():
             crossoff_options += '<option value="{0}">{0}</option>'.format(movie)
@@ -72,11 +73,9 @@ class Index(webapp2.RequestHandler):
         </form>
         """.format(crossoff_options)
 
+        # if we have an error, make a <p> to display it
         error = self.request.get("error")
-        if error:
-            error_element = "<p class='error'>" + error + "</p>"
-        else:
-            error_element = ""
+        error_element = "<p class='error'>" + error + "</p>" if error else ""
 
         content = edit_header + add_form + crossoff_form + error_element
         response = page_header + content + page_footer
