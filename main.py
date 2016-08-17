@@ -26,6 +26,15 @@ page_footer = """
 """
 
 
+# a list of movies that nobody should be allowed to watch
+terrible_movies = [
+    "Gigli",
+    "Star Wars Episode 1: Attack of the Clones",
+    "Paul Blart: Mall Cop 2",
+    "Nine Lives"
+]
+
+
 def getCurrentWatchlist():
     """ Returns the user's current watchlist """
 
@@ -94,7 +103,7 @@ class AddMovie(webapp2.RequestHandler):
 
 
         # TODO 1
-        # 'escape' the user's input so that if they type HMTL, it doesn't mess up our site
+        # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
 
 
         # TODO 2
