@@ -108,7 +108,7 @@ class AddMovie(webapp2.RequestHandler):
 
         # if the user wants to add a terrible movie, redirect and yell at them
         if new_movie in terrible_movies:
-            error = "Trust me, you don't want to add '{0}' to your watchlist".format(new_movie)
+            error = "Trust me, you don't want to add '{0}' to your Watchlist.".format(new_movie)
             self.redirect("/?error=" + cgi.escape(error))
 
         # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
