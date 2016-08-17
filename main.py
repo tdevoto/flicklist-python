@@ -101,11 +101,6 @@ class AddMovie(webapp2.RequestHandler):
         # look inside the request to figure out what the user typed
         new_movie = self.request.get("new-movie")
 
-
-        # TODO 1
-        # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
-
-
         # TODO 2
         # if the user typed nothing at all, redirect and yell at them
 
@@ -113,6 +108,9 @@ class AddMovie(webapp2.RequestHandler):
         # TODO 3
         # if the user wants to add a terrible movie, redirect and yell at them
 
+
+        # TODO 1
+        # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
 
         # build response content
         new_movie_element = "<strong>" + new_movie + "</strong>"
@@ -135,11 +133,11 @@ class CrossOffMovie(webapp2.RequestHandler):
             # so we redirect back to the front page and yell at them
 
             # make a helpful error message
-            error_message = "'{0}' is not in your Watchlist, so you can't cross it off!".format(crossed_off_movie)
-            escaped_messsage = cgi.escape(error_message, quote=True)
+            error = "'{0}' is not in your Watchlist, so you can't cross it off!".format(crossed_off_movie)
+            error_escaped = cgi.escape(error, quote=True)
 
             # redirect to homepage, and include error as a query parameter in the URL
-            self.redirect("/?error=" + escaped_messsage)
+            self.redirect("/?error=" + error_escaped)
 
         # if we didn't redirect by now, then all is well
         crossed_off_movie_element = "<strike>" + crossed_off_movie + "</strike>"
