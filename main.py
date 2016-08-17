@@ -39,7 +39,7 @@ def getCurrentWatchlist():
     """ Returns the user's current watchlist """
 
     # for now, we are just pretending
-    return [ "Star Wars 2", "Minions", "Freaky Friday", "My Favorite Martian" ]
+    return [ "Star Wars", "Minions", "Freaky Friday", "My Favorite Martian" ]
 
 
 class Index(webapp2.RequestHandler):
