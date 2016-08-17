@@ -133,7 +133,9 @@ class CrossOffMovie(webapp2.RequestHandler):
         if (crossed_off_movie in getCurrentWatchlist()) == False:
             # the user tried to cross off a movie that isn't in their list,
             # so we redirect back to the front page and yell at them
-            error_message = crossed_off_movie + " is not in your Watchlist, so you can't cross it off!"
+
+            # make a helpful error message
+            error_message = "'{0}' is not in your Watchlist, so you can't cross it off!".format(crossed_off_movie)
             escaped_messsage = cgi.escape(error_message, quote=True)
 
             # redirect to homepage, and include error as a query parameter in the URL
