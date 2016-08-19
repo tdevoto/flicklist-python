@@ -64,9 +64,12 @@ class AddMovie(webapp2.RequestHandler):
         # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
         new_movie_escaped = cgi.escape(new_movie, quote=True)
 
-        # TODO 1
-        # Use a template to render the confirmation message
-
+        # render the confirmation message
+        t_add = jinja_env.get_template("add.html")
+        add_content = t_add.render(movie = new_movie_escaped)
+        response = t_scaffolding.render(
+                        title = "FlickList: Add a Movie",
+                        content = add_content)
         self.response.write("Under construction...")
 
 
@@ -78,6 +81,8 @@ class CrossOffMovie(webapp2.RequestHandler):
     def post(self):
         crossed_off_movie = self.request.get("crossed-off-movie")
 
+        # if the movie movie is just whitespace (or nonexistant), reject.
+        # (we didn't check for this last time--only checked in the AddMovie handler--but we probably should have!)
         if not crossed_off_movie or crossed_off_movie.strip() == "":
             error = "Please specify a movie to cross off."
             self.redirect("/?error=", cgi.escape(error))
@@ -94,9 +99,9 @@ class CrossOffMovie(webapp2.RequestHandler):
         # render confirmation page
         t_cross_off = jinja_env.get_template("cross-off.html")
         cross_off_content = t_cross_off.render(movie=crossed_off_movie)
-        title = "FlickList: Cross a Movie Off"
         response = t_scaffolding.render(
-                    title = title, content = cross_off_content)
+                    title = "FlickList: Cross a Movie Off",
+                    content = cross_off_content)
         self.response.write(response)
 
 
