@@ -70,7 +70,7 @@ class AddMovie(webapp2.RequestHandler):
         response = t_scaffolding.render(
                         title = "FlickList: Add a Movie",
                         content = add_content)
-        self.response.write("Under construction...")
+        self.response.write(response)
 
 
 class CrossOffMovie(webapp2.RequestHandler):
