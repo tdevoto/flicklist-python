@@ -8,11 +8,8 @@ import os
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir))
 
-
 # load some templates
-t_page_header = jinja_env.get_template("page-header.html")
-t_page_footer = jinja_env.get_template("page-footer.html")
-
+t_scaffolding = jinja_env.get_template("scaffolding.html")
 
 # a list of movies that nobody should be allowed to watch
 terrible_movies = [
@@ -37,14 +34,12 @@ class Index(webapp2.RequestHandler):
 
     def get(self):
         t_edit = jinja_env.get_template("edit.html")
-
-        main_content = t_edit.render(
+        edit_content = t_edit.render(
                         watchlist = getCurrentWatchlist(),
                         error = self.request.get("error"))
-        page_header = t_page_header.render(title="FlickList")
-        page_footer = t_page_footer.render()
-
-        response = page_header + main_content + page_footer
+        response = t_scaffolding.render(
+                    title = "FlickList: Edit My Watchlist",
+                    content = edit_content)
         self.response.write(response)
 
 
@@ -98,13 +93,10 @@ class CrossOffMovie(webapp2.RequestHandler):
 
         # render confirmation page
         t_cross_off = jinja_env.get_template("cross-off.html")
-        main_content = t_cross_off.render(movie=crossed_off_movie)
-        page_header = t_page_header.render(
-                        title="FlickList: " + crossed_off_movie
-                        + " has been crossed off your Watchlist")
-        page_footer = t_page_footer.render()
-
-        response = page_header + main_content + page_footer
+        cross_off_content = t_cross_off.render(movie=crossed_off_movie)
+        title = "FlickList: Cross a Movie Off"
+        response = t_scaffolding.render(
+                    title = title, content = cross_off_content)
         self.response.write(response)
 
 
