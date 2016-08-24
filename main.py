@@ -105,8 +105,20 @@ class CrossOffMovie(webapp2.RequestHandler):
         self.response.write(response)
 
 
+class MovieRatings(webapp2.RequestHandler):
+    """ Handles requests coming in to '/ratings'
+        e.g. www.flicklist.com/ratings
+    """
+
+    def get(self):
+        self.response.write("Movies I have watched:")
+
+
+
+
 app = webapp2.WSGIApplication([
     ('/', Index),
     ('/add', AddMovie),
-    ('/cross-off', CrossOffMovie)
+    ('/cross-off', CrossOffMovie),
+    ('/ratings', MovieRatings)
 ], debug=True)
