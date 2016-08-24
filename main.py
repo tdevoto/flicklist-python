@@ -88,14 +88,16 @@ class WatchMovie(webapp2.RequestHandler):
     def post(self):
         watched_movie = self.request.get("watched-movie")
 
-        # if the movie movie is just whitespace (or nonexistant), reject.
+        # if the movie is just whitespace (or nonexistant), reject.
         if not watched_movie or watched_movie.strip() == "":
             self.error(400)
+            self.response.write("Oops! Something went wrong.")
             return
 
         # if user tried to cross off a movie that is not in their list, reject
         if not (watched_movie in getUnwatchedMovies()):
             self.error(400)
+            self.response.write("Oops! Something went wrong.")
             return
 
         # render confirmation page
@@ -119,7 +121,6 @@ class MovieRatings(webapp2.RequestHandler):
                     title = "FlickList: My Ratings",
                     content = ratings_content)
         self.response.write(response)
-
 
 
 
