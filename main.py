@@ -20,11 +20,17 @@ terrible_movies = [
 ]
 
 
-def getCurrentWatchlist():
-    """ Returns the user's current watchlist """
+def getUnwatchedMovies():
+    """ Returns the list of movies the user wants to watch (but hasnt yet) """
 
     # for now, we are just pretending
     return [ "Star Wars", "Minions", "Freaky Friday", "My Favorite Martian" ]
+
+
+def getWatchedMovies():
+    """ Returns the list of movies the user has already watched """
+
+    return [ "The Matrix", "The Dawg" ]
 
 
 class Index(webapp2.RequestHandler):
@@ -35,7 +41,7 @@ class Index(webapp2.RequestHandler):
     def get(self):
         t_edit = jinja_env.get_template("edit.html")
         edit_content = t_edit.render(
-                        watchlist = getCurrentWatchlist(),
+                        movies = getUnwatchedMovies(),
                         error = self.request.get("error"))
         response = t_scaffolding.render(
                     title = "FlickList: Edit My Watchlist",
@@ -73,9 +79,9 @@ class AddMovie(webapp2.RequestHandler):
         self.response.write(response)
 
 
-class CrossOffMovie(webapp2.RequestHandler):
-    """ Handles requests coming in to '/cross-off'
-        e.g. www.flicklist.com/cross-off
+class WatchedMovie(webapp2.RequestHandler):
+    """ Handles requests coming in to '/watched-it'
+        e.g. www.flicklist.com/watched-it
     """
 
     def renderError(self, error_code):
@@ -84,30 +90,30 @@ class CrossOffMovie(webapp2.RequestHandler):
 
 
     def post(self):
-        crossed_off_movie = self.request.get("crossed-off-movie")
+        watched_movie = self.request.get("watched-movie")
 
         # if the movie movie is just whitespace (or nonexistant), reject.
         # (we didn't check for this last time--only checked in the AddMovie handler--but we probably should have!)
-        if not crossed_off_movie or crossed_off_movie.strip() == "":
+        if not watched_movie or watched_movie.strip() == "":
             self.renderError(400)
             return
 
         # if user tried to cross off a movie that is not in their list, reject
-        if not (crossed_off_movie in getCurrentWatchlist()):
+        if not (watched_movie in getUnwatchedMovies()):
             self.renderError(400)
             return
 
         # render confirmation page
-        t_cross_off = jinja_env.get_template("cross-off.html")
-        cross_off_content = t_cross_off.render(movie=crossed_off_movie)
+        t_watched_it = jinja_env.get_template("watched-it-confirmation.html")
+        watched_it_content = t_watched_it.render(movie = watched_movie)
         response = t_scaffolding.render(
                     title = "FlickList: Cross a Movie Off",
-                    content = cross_off_content)
+                    content = watched_it_content)
         self.response.write(response)
 
 
 app = webapp2.WSGIApplication([
     ('/', Index),
     ('/add', AddMovie),
-    ('/cross-off', CrossOffMovie)
+    ('/watched-it', WatchedMovie)
 ], debug=True)
