@@ -20,11 +20,18 @@ terrible_movies = [
 ]
 
 
-def getCurrentWatchlist():
-    """ Returns the user's current watchlist """
+def getUnwatchedMovies():
+    """ Returns the list of movies the user wants to watch (but hasn't yet) """
 
     # for now, we are just pretending
     return [ "Star Wars", "Minions", "Freaky Friday", "My Favorite Martian" ]
+
+
+def getWatchedMovies():
+    """ Returns the list of movies the user has watched """
+
+    # for now, just pretending
+    return [ "The Matrix", "Wall-E", "The Act of Killing" ]
 
 
 class Index(webapp2.RequestHandler):
@@ -35,7 +42,7 @@ class Index(webapp2.RequestHandler):
     def get(self):
         t_edit = jinja_env.get_template("edit.html")
         edit_content = t_edit.render(
-                        watchlist = getCurrentWatchlist(),
+                        watchlist = getUnwatchedMovies(),
                         error = self.request.get("error"))
         response = t_scaffolding.render(
                     title = "FlickList: Edit My Watchlist",
@@ -88,7 +95,7 @@ class CrossOffMovie(webapp2.RequestHandler):
             self.redirect("/?error=", cgi.escape(error))
 
         # if user tried to cross off a movie that is not in their list, reject
-        if not (crossed_off_movie in getCurrentWatchlist()):
+        if not (crossed_off_movie in getUnwatchedMovies()):
             # make a helpful error message
             error = "'{0}' is not in your Watchlist, so you can't cross it off!".format(crossed_off_movie)
             error_escaped = cgi.escape(error, quote=True)
@@ -111,7 +118,10 @@ class MovieRatings(webapp2.RequestHandler):
     """
 
     def get(self):
-        self.response.write("Movies I have watched:")
+        t_ratings = jinja_env.get_template("ratings.html")
+        ratings_content = t_ratings.render(movies = getWatchedMovies())
+        response = t_scaffolding.render(content = ratings_content)
+        self.response.write(response)
 
 
 
