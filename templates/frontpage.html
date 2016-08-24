@@ -3,7 +3,13 @@
 
 <ul>
     {% for movie in unwatched_movies %}
-    <li>{{ movie }}</li>
+    <li>
+        <form action="/watched-it" method="post">
+            {{ movie }}
+            <input type="hidden" name="watched-movie" value="{{ movie }}"/>
+            <input type="submit" value="I Watched It!"/>
+        </form>
+    </li>
     {% endfor %}
 </ul>
 

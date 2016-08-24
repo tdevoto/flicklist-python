@@ -80,35 +80,30 @@ class AddMovie(webapp2.RequestHandler):
         self.response.write(response)
 
 
-class CrossOffMovie(webapp2.RequestHandler):
+class WatchMovie(webapp2.RequestHandler):
     """ Handles requests coming in to '/cross-off'
         e.g. www.flicklist.com/cross-off
     """
 
     def post(self):
-        crossed_off_movie = self.request.get("crossed-off-movie")
+        watched_movie = self.request.get("watched-movie")
 
         # if the movie movie is just whitespace (or nonexistant), reject.
-        # (we didn't check for this last time--only checked in the AddMovie handler--but we probably should have!)
-        if not crossed_off_movie or crossed_off_movie.strip() == "":
-            error = "Please specify a movie to cross off."
-            self.redirect("/?error=", cgi.escape(error))
+        if not watched_movie or watched_movie.strip() == "":
+            self.error(400)
+            return
 
         # if user tried to cross off a movie that is not in their list, reject
-        if not (crossed_off_movie in getUnwatchedMovies()):
-            # make a helpful error message
-            error = "'{0}' is not in your Watchlist, so you can't cross it off!".format(crossed_off_movie)
-            error_escaped = cgi.escape(error, quote=True)
-
-            # redirect to homepage, and include error as a query parameter in the URL
-            self.redirect("/?error=" + error_escaped)
+        if not (watched_movie in getUnwatchedMovies()):
+            self.error(400)
+            return
 
         # render confirmation page
-        t_cross_off = jinja_env.get_template("cross-off.html")
-        cross_off_content = t_cross_off.render(movie=crossed_off_movie)
+        t_watched_it = jinja_env.get_template("watched-it.html")
+        watched_it = t_watched_it.render(movie = watched_movie)
         response = t_scaffolding.render(
-                    title = "FlickList: Cross a Movie Off",
-                    content = cross_off_content)
+                    title = "FlickList: You Watched a Movie",
+                    content = watched_it)
         self.response.write(response)
 
 
@@ -131,6 +126,6 @@ class MovieRatings(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', Index),
     ('/add', AddMovie),
-    ('/cross-off', CrossOffMovie),
+    ('/watched-it', WatchMovie),
     ('/ratings', MovieRatings)
 ], debug=True)
