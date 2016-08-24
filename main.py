@@ -71,7 +71,7 @@ class AddMovie(webapp2.RequestHandler):
         new_movie_escaped = cgi.escape(new_movie, quote=True)
 
         # render the confirmation message
-        t_add = jinja_env.get_template("add.html")
+        t_add = jinja_env.get_template("add-confirmation.html")
         add_content = t_add.render(movie = new_movie_escaped)
         response = t_scaffolding.render(
                         title = "FlickList: Add a Movie",
