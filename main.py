@@ -35,7 +35,7 @@ class Index(webapp2.RequestHandler):
     def get(self):
         t_edit = jinja_env.get_template("edit.html")
         edit_content = t_edit.render(
-                        watchlist = getCurrentWatchlist(),
+                        movies = getCurrentWatchlist(),
                         error = self.request.get("error"))
         response = t_scaffolding.render(
                     title = "FlickList: Edit My Watchlist",
