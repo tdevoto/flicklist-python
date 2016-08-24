@@ -31,7 +31,7 @@ def getWatchedMovies():
     """ Returns the list of movies the user has watched """
 
     # for now, just pretending
-    return [ "The Matrix", "Wall-E", "The Act of Killing" ]
+    return [ "The Matrix", "Wall-E", "The Act of Killing", "The Big Green" ]
 
 
 class Index(webapp2.RequestHandler):
