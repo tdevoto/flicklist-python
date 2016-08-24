@@ -78,23 +78,24 @@ class CrossOffMovie(webapp2.RequestHandler):
         e.g. www.flicklist.com/cross-off
     """
 
+    def renderError(self, error_code):
+        self.error(error_code)
+        self.response.write("Oops! Something went wrong.")
+
+
     def post(self):
         crossed_off_movie = self.request.get("crossed-off-movie")
 
         # if the movie movie is just whitespace (or nonexistant), reject.
         # (we didn't check for this last time--only checked in the AddMovie handler--but we probably should have!)
         if not crossed_off_movie or crossed_off_movie.strip() == "":
-            error = "Please specify a movie to cross off."
-            self.redirect("/?error=", cgi.escape(error))
+            self.renderError(400)
+            return
 
         # if user tried to cross off a movie that is not in their list, reject
         if not (crossed_off_movie in getCurrentWatchlist()):
-            # make a helpful error message
-            error = "'{0}' is not in your Watchlist, so you can't cross it off!".format(crossed_off_movie)
-            error_escaped = cgi.escape(error, quote=True)
-
-            # redirect to homepage, and include error as a query parameter in the URL
-            self.redirect("/?error=" + error_escaped)
+            self.renderError(400)
+            return
 
         # render confirmation page
         t_cross_off = jinja_env.get_template("cross-off.html")
