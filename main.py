@@ -39,13 +39,13 @@ class Index(webapp2.RequestHandler):
     """
 
     def get(self):
-        t_edit = jinja_env.get_template("edit.html")
-        edit_content = t_edit.render(
+        t_frontpage = jinja_env.get_template("frontpage.html")
+        frontpage_content = t_frontpage.render(
                         movies = getUnwatchedMovies(),
                         error = self.request.get("error"))
         response = t_scaffolding.render(
                     title = "FlickList: Edit My Watchlist",
-                    content = edit_content)
+                    content = frontpage_content)
         self.response.write(response)
 
 

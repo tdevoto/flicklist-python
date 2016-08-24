@@ -1,13 +1,18 @@
 
-<h2>Edit My Watchlist</h2>
+<h2>Movies I Want to Watch:</h2>
+
+<ul>
+{% for movie in movies %}
+    <li>{{ movie }}</li>
+{% endfor %}
+</ul>
 
 <form action="/add" method="post">
     <label>
-        I want to add
+        I also want to watch
         <input type="text" name="new-movie"/>
-        to my watchlist.
     </label>
-    <input type="submit" value="Add It"/>
+    <input type="submit" value="Add it to my List"/>
 </form>
 
 <form action="/cross-off" method="post">
