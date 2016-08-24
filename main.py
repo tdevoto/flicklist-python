@@ -41,12 +41,12 @@ class Index(webapp2.RequestHandler):
 
     def get(self):
         t_frontpage = jinja_env.get_template("frontpage.html")
-        edit_content = t_frontpage.render(
+        frontpage_content = t_frontpage.render(
                         unwatched_movies = getUnwatchedMovies(),
                         error = self.request.get("error"))
         response = t_scaffolding.render(
-                    title = "FlickList: Edit My Watchlist",
-                    content = edit_content)
+                    title = "FlickList: Movies I Want to Watch",
+                    content = frontpage_content)
         self.response.write(response)
 
 
@@ -120,7 +120,9 @@ class MovieRatings(webapp2.RequestHandler):
     def get(self):
         t_ratings = jinja_env.get_template("ratings.html")
         ratings_content = t_ratings.render(movies = getWatchedMovies())
-        response = t_scaffolding.render(content = ratings_content)
+        response = t_scaffolding.render(
+                    title = "FlickList: My Ratings",
+                    content = ratings_content)
         self.response.write(response)
 
 
