@@ -14,9 +14,9 @@
     <label>
         I want to cross off
         <select name="crossed-off-movie"/>
-            {% for movie in watchlist %}
+        {% for movie in watchlist %}
             <option value="{{ movie }}">{{ movie }}</option>
-            {% endfor %}
+        {% endfor %}
         </select>
         from my watchlist.
     </label>
