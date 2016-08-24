@@ -101,7 +101,7 @@ class WatchMovie(webapp2.RequestHandler):
             return
 
         # render confirmation page
-        t_watched_it = jinja_env.get_template("watched-it.html")
+        t_watched_it = jinja_env.get_template("watched-it-confirmation.html")
         watched_it = t_watched_it.render(movie = watched_movie)
         response = t_scaffolding.render(
                     title = "FlickList: You Watched a Movie",
@@ -121,6 +121,20 @@ class MovieRatings(webapp2.RequestHandler):
                     title = "FlickList: My Ratings",
                     content = ratings_content)
         self.response.write(response)
+
+    def post(self):
+        movie = self.request.get("movie")
+        rating = self.request.get("rating")
+
+        t_rating_confirmation = jinja_env.get_template("rating-confirmation.html")
+        rating_confirmation_content = t_rating_confirmation.render(
+                                        movie = movie,
+                                        rating = rating)
+        response = t_scaffolding.render(
+                    title = "FlickList: Give a Rating",
+                    content = rating_confirmation_content)
+        self.response.write(response)
+
 
 
 
