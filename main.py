@@ -65,7 +65,7 @@ class AddMovie(webapp2.RequestHandler):
         new_movie_escaped = cgi.escape(new_movie, quote=True)
 
         # render the confirmation message
-        t_add = jinja_env.get_template("add.html")
+        t_add = jinja_env.get_template("add-confirmation.html")
         add_content = t_add.render(movie = new_movie_escaped)
         response = t_scaffolding.render(
                         title = "FlickList: Add a Movie",
@@ -97,7 +97,7 @@ class CrossOffMovie(webapp2.RequestHandler):
             self.redirect("/?error=" + error_escaped)
 
         # render confirmation page
-        t_cross_off = jinja_env.get_template("cross-off.html")
+        t_cross_off = jinja_env.get_template("cross-off-confirmation.html")
         cross_off_content = t_cross_off.render(movie=crossed_off_movie)
         response = t_scaffolding.render(
                     title = "FlickList: Cross a Movie Off",
