@@ -2,7 +2,7 @@
 <h2>Movies I Want to Watch:</h2>
 
 <ul>
-    {% for movie in unwatched_movies %}
+{% for movie in movies %}
     <li>
         <form action="/watched-it" method="post">
             {{ movie }}
@@ -10,7 +10,7 @@
             <input type="submit" value="I Watched It!"/>
         </form>
     </li>
-    {% endfor %}
+{% endfor %}
 </ul>
 
 <form action="/add" method="post">

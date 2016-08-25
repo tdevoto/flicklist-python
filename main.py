@@ -51,6 +51,7 @@ class Index(Handler):
     """
 
     def get(self):
+        print("the movies are  " + str(getUnwatchedMovies()))
         t_frontpage = jinja_env.get_template("frontpage.html")
         frontpage_content = t_frontpage.render(
                                 movies = getUnwatchedMovies(),
