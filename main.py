@@ -112,8 +112,15 @@ class WatchedMovie(webapp2.RequestHandler):
         self.response.write(response)
 
 
+class MovieRatings(webapp2.RequestHandler):
+
+    def get(self):
+        self.response.write("testing 1 2 3 ...")
+
+
 app = webapp2.WSGIApplication([
     ('/', Index),
     ('/add', AddMovie),
-    ('/watched-it', WatchedMovie)
+    ('/watched-it', WatchedMovie),
+    ('/ratings', MovieRatings)
 ], debug=True)
