@@ -21,17 +21,24 @@ terrible_movies = [
 
 
 def getUnwatchedMovies():
-    """ Returns the list of movies the user wants to watch (but hasn't yet) """
+    """ Returns the list of movies the user wants to watch (but hasnt yet) """
 
     # for now, we are just pretending
     return [ "Star Wars", "Minions", "Freaky Friday", "My Favorite Martian" ]
 
 
 def getWatchedMovies():
-    """ Returns the list of movies the user has watched """
+    """ Returns the list of movies the user has already watched """
 
-    # for now, just pretending
-    return [ "The Matrix", "Wall-E", "The Act of Killing", "The Big Green" ]
+    return [ "The Matrix", "The Dawg" ]
+
+
+class Handler(webapp2.RequestHandler):
+
+    def renderError(self, error_code):
+        self.error(error_code)
+        self.response.write("Oops! Something went wrong.")
+
 
 
 class Index(webapp2.RequestHandler):
@@ -42,8 +49,8 @@ class Index(webapp2.RequestHandler):
     def get(self):
         t_frontpage = jinja_env.get_template("frontpage.html")
         frontpage_content = t_frontpage.render(
-                        unwatched_movies = getUnwatchedMovies(),
-                        error = self.request.get("error"))
+                                movies = getUnwatchedMovies(),
+                                error = self.request.get("error"))
         response = t_scaffolding.render(
                     title = "FlickList: Movies I Want to Watch",
                     content = frontpage_content)
@@ -72,7 +79,7 @@ class AddMovie(webapp2.RequestHandler):
         new_movie_escaped = cgi.escape(new_movie, quote=True)
 
         # render the confirmation message
-        t_add = jinja_env.get_template("add.html")
+        t_add = jinja_env.get_template("add-confirmation.html")
         add_content = t_add.render(movie = new_movie_escaped)
         response = t_scaffolding.render(
                         title = "FlickList: Add a Movie",
@@ -80,67 +87,64 @@ class AddMovie(webapp2.RequestHandler):
         self.response.write(response)
 
 
-class WatchMovie(webapp2.RequestHandler):
-    """ Handles requests coming in to '/cross-off'
-        e.g. www.flicklist.com/cross-off
+class WatchedMovie(webapp2.RequestHandler):
+    """ Handles requests coming in to '/watched-it'
+        e.g. www.flicklist.com/watched-it
     """
 
     def post(self):
         watched_movie = self.request.get("watched-movie")
 
-        # if the movie is just whitespace (or nonexistant), reject.
+        # if the movie movie is just whitespace (or nonexistant), reject.
+        # (we didn't check for this last time--only checked in the AddMovie handler--but we probably should have!)
         if not watched_movie or watched_movie.strip() == "":
-            self.error(400)
-            self.response.write("Oops! Something went wrong.")
+            self.renderError(400)
             return
 
         # if user tried to cross off a movie that is not in their list, reject
         if not (watched_movie in getUnwatchedMovies()):
-            self.error(400)
-            self.response.write("Oops! Something went wrong.")
+            self.renderError(400)
             return
 
         # render confirmation page
         t_watched_it = jinja_env.get_template("watched-it-confirmation.html")
-        watched_it = t_watched_it.render(movie = watched_movie)
+        watched_it_content = t_watched_it.render(movie = watched_movie)
         response = t_scaffolding.render(
-                    title = "FlickList: You Watched a Movie",
-                    content = watched_it)
+                    title = "FlickList: Watched a Movie",
+                    content = watched_it_content)
         self.response.write(response)
 
 
-class MovieRatings(webapp2.RequestHandler):
-    """ Handles requests coming in to '/ratings'
-        e.g. www.flicklist.com/ratings
-    """
+class MovieRatings(Handler):
 
     def get(self):
         t_ratings = jinja_env.get_template("ratings.html")
         ratings_content = t_ratings.render(movies = getWatchedMovies())
         response = t_scaffolding.render(
-                    title = "FlickList: My Ratings",
+                    title = "FlickList: Movies I have Watched",
                     content = ratings_content)
         self.response.write(response)
 
     def post(self):
         movie = self.request.get("movie")
         rating = self.request.get("rating")
-
-        t_rating_confirmation = jinja_env.get_template("rating-confirmation.html")
-        rating_confirmation_content = t_rating_confirmation.render(
-                                        movie = movie,
-                                        rating = rating)
-        response = t_scaffolding.render(
-                    title = "FlickList: Give a Rating",
-                    content = rating_confirmation_content)
-        self.response.write(response)
-
-
+        if movie and rating:
+            t_rating_confirmation = jinja_env.get_template("rating-confirmation.html")
+            confirmation_content = t_rating_confirmation.render(
+                                    movie = movie,
+                                    rating = rating)
+            response = t_scaffolding.render(
+                        title = "FlickList: Rate a Movie",
+                        content = confirmation_content)
+            self.response.write(response)
+        else:
+            self.renderError(400)
+            return
 
 
 app = webapp2.WSGIApplication([
     ('/', Index),
     ('/add', AddMovie),
-    ('/watched-it', WatchMovie),
+    ('/watched-it', WatchedMovie),
     ('/ratings', MovieRatings)
 ], debug=True)
