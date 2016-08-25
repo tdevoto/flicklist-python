@@ -41,8 +41,8 @@ class Index(webapp2.RequestHandler):
     def get(self):
         t_frontpage = jinja_env.get_template("frontpage.html")
         frontpage_content = t_frontpage.render(
-                        movies = getUnwatchedMovies(),
-                        error = self.request.get("error"))
+                                movies = getUnwatchedMovies(),
+                                error = self.request.get("error"))
         response = t_scaffolding.render(
                     title = "FlickList: Movies I Want to Watch",
                     content = frontpage_content)
