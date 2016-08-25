@@ -3,13 +3,9 @@ import cgi
 import jinja2
 import os
 
-
 # set up jinja
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir))
-
-# we'll use this template in a few places
-t_scaffolding = jinja_env.get_template("scaffolding.html")
 
 # a list of movies that nobody should be allowed to watch
 terrible_movies = [
@@ -33,15 +29,9 @@ class Index(webapp2.RequestHandler):
     """
 
     def get(self):
-        t_edit = jinja_env.get_template("edit.html")
-        edit_content = t_edit.render(
-                        watchlist = getCurrentWatchlist(),
-                        error = self.request.get("error"))
-        response = t_scaffolding.render(
-                    title = "FlickList: Edit My Watchlist",
-                    content = edit_content)
+        t = jinja_env.get_template("edit.html")
+        response = t.render(watchlist=getCurrentWatchlist(), error=self.request.get("error"))
         self.response.write(response)
-
 
 class AddMovie(webapp2.RequestHandler):
     """ Handles requests coming in to '/add'
@@ -92,11 +82,8 @@ class CrossOffMovie(webapp2.RequestHandler):
             self.redirect("/?error=" + error_escaped)
 
         # render confirmation page
-        t_cross_off = jinja_env.get_template("cross-off.html")
-        cross_off_content = t_cross_off.render(movie=crossed_off_movie)
-        title = "FlickList: Cross a Movie Off"
-        response = t_scaffolding.render(
-                    title = title, content = cross_off_content)
+        t = jinja_env.get_template("cross-off.html")
+        response = t.render(crossed_off_movie=crossed_off_movie)
         self.response.write(response)
 
 

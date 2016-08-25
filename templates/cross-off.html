@@ -1,3 +1,5 @@
-<p>
-    <strike>{{ movie }}</strike> has been crossed off your Watchlist.
-</p>
+{% extends "base.html" %}
+
+{% block content %}
+<p><strike>{{ crossed_off_movie }}</strike>  has been crossed off your Watchlist.</p>
+{% endblock %}
