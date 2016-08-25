@@ -2,6 +2,7 @@ import webapp2
 import cgi
 import jinja2
 import os
+from google.appengine.ext import db
 
 
 # set up jinja
@@ -20,10 +21,14 @@ terrible_movies = [
 ]
 
 
+class Movie(db.Model):
+    title = db.StringProperty(required = True)
+    created = db.StringProperty(auto_now_add = True)
+
+
 def getUnwatchedMovies():
     """ Returns the list of movies the user wants to watch (but hasnt yet) """
 
-    # for now, we are just pretending
     return [ "Star Wars", "Minions", "Freaky Friday", "My Favorite Martian" ]
 
 
