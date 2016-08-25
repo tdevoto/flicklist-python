@@ -34,14 +34,18 @@ def getWatchedMovies():
 
 
 class Handler(webapp2.RequestHandler):
+    """ A base RequestHandler class for our app.
+        The other handlers inherit form this one.
+    """
 
     def renderError(self, error_code):
+        """ Sends an HTTP error code and a generic "oops!" message to the client. """
+
         self.error(error_code)
         self.response.write("Oops! Something went wrong.")
 
 
-
-class Index(webapp2.RequestHandler):
+class Index(Handler):
     """ Handles requests coming in to '/' (the root of our site)
         e.g. www.flicklist.com/
     """
@@ -57,7 +61,7 @@ class Index(webapp2.RequestHandler):
         self.response.write(response)
 
 
-class AddMovie(webapp2.RequestHandler):
+class AddMovie(Handler):
     """ Handles requests coming in to '/add'
         e.g. www.flicklist.com/add
     """
@@ -87,7 +91,7 @@ class AddMovie(webapp2.RequestHandler):
         self.response.write(response)
 
 
-class WatchedMovie(webapp2.RequestHandler):
+class WatchedMovie(Handler):
     """ Handles requests coming in to '/watched-it'
         e.g. www.flicklist.com/watched-it
     """
