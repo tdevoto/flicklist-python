@@ -134,23 +134,29 @@ class WatchedMovie(Handler):
 class MovieRatings(Handler):
 
     def get(self):
+        watched_movies = db.GqlQuery("SELECT * FROM Movie WHERE watched = True ORDER BY created desc")
         t_ratings = jinja_env.get_template("ratings.html")
-        ratings_content = t_ratings.render(movies = getWatchedMovies())
+        ratings_content = t_ratings.render(movies = watched_movies)
         response = t_scaffolding.render(
                     title = "FlickList: Movies I have Watched",
                     content = ratings_content)
         self.response.write(response)
 
     def post(self):
-        movie = self.request.get("movie")
+        movie_id = self.request.get("movie")
+        movie = Movie.get_by_id( int(movie_id) )
         rating = self.request.get("rating")
+
         if movie and rating:
+            # update movie.rating property
+            movie.rating = rating
+            movie.put()
+
+            # render confirmation
             t_rating_confirmation = jinja_env.get_template("rating-confirmation.html")
-            confirmation_content = t_rating_confirmation.render(
-                                    movie = movie,
-                                    rating = rating)
+            confirmation_content = t_rating_confirmation.render(movie = movie)
             response = t_scaffolding.render(
-                        title = "FlickList: Rate a Movie",
+                        title = "FlickList: Movies I have Watched",
                         content = confirmation_content)
             self.response.write(response)
         else:
