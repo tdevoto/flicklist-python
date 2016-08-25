@@ -1,29 +1,7 @@
-import webapp2
-import cgi
+import webapp2, cgi, jinja2, os
 
-# html boilerplate for the top of every page
-page_header = """
-<!DOCTYPE html>
-<html>
-<head>
-    <title>FlickList</title>
-    <style type="text/css">
-        .error {
-            color: red;
-        }
-    </style>
-</head>
-<body>
-    <h1>
-        <a href="/">FlickList</a>
-    </h1>
-"""
-
-# html boilerplate for the bottom of every page
-page_footer = """
-</body>
-</html>
-"""
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape = True)
 
 
 # a list of movies that nobody should be allowed to watch
@@ -48,49 +26,9 @@ class Index(webapp2.RequestHandler):
     """
 
     def get(self):
-
-        edit_header = "<h3>Edit My Watchlist</h3>"
-
-        # a form for adding new movies
-        add_form = """
-        <form action="/add" method="post">
-            <label>
-                I want to add
-                <input type="text" name="new-movie"/>
-                to my watchlist.
-            </label>
-            <input type="submit" value="Add It"/>
-        </form>
-        """
-
-        # a form for crossing off movies
-        # (first we build a dropdown from the current watchlist items)
-        crossoff_options = ""
-        for movie in getCurrentWatchlist():
-            crossoff_options += '<option value="{0}">{0}</option>'.format(movie)
-
-        crossoff_form = """
-        <form action="/cross-off" method="post">
-            <label>
-                I want to cross off
-                <select name="crossed-off-movie"/>
-                    {0}
-                </select>
-                from my watchlist.
-            </label>
-            <input type="submit" value="Cross It Off"/>
-        </form>
-        """.format(crossoff_options)
-
-        # if we have an error, make a <p> to display it
-        error = self.request.get("error")
-        error_element = "<p class='error'>" + error + "</p>" if error else ""
-
-        # combine all the pieces to build the content of our response
-        main_content = edit_header + add_form + crossoff_form + error_element
-        response = page_header + main_content + page_footer
+        t = jinja_env.get_template("edit.html")
+        response = t.render(watchlist=getCurrentWatchlist(), error=self.request.get("error"))
         self.response.write(response)
-
 
 class AddMovie(webapp2.RequestHandler):
     """ Handles requests coming in to '/add'
@@ -114,11 +52,10 @@ class AddMovie(webapp2.RequestHandler):
         # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
         new_movie_escaped = cgi.escape(new_movie, quote=True)
 
-        # build response content
-        new_movie_element = "<strong>" + new_movie_escaped + "</strong>"
-        sentence = new_movie_element + " has been added to your Watchlist!"
-        response = page_header + "<p>" + sentence + "</p>" + page_footer
-        self.response.write(response)
+        # TODO 1
+        # Use a template to render the confirmation message
+
+        self.response.write("Under construction...")
 
 
 class CrossOffMovie(webapp2.RequestHandler):
@@ -141,10 +78,8 @@ class CrossOffMovie(webapp2.RequestHandler):
             # redirect to homepage, and include error as a query parameter in the URL
             self.redirect("/?error=" + error_escaped)
 
-        # if we didn't redirect by now, then all is well
-        crossed_off_movie_element = "<strike>" + crossed_off_movie + "</strike>"
-        confirmation = crossed_off_movie_element + " has been crossed off your Watchlist."
-        response = page_header + "<p>" + confirmation + "</p>" + page_footer
+        t = jinja_env.get_template("cross-off.html")
+        response = t.render(crossed_off_movie=crossed_off_movie)
         self.response.write(response)
 
 
