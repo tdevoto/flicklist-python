@@ -117,7 +117,9 @@ class MovieRatings(webapp2.RequestHandler):
     def get(self):
         t_ratings = jinja_env.get_template("ratings.html")
         ratings_content = t_ratings.render(movies = getWatchedMovies())
-        response = t_scaffolding.render(content = ratings_content)
+        response = t_scaffolding.render(
+                    title = "FlickList: Movies I have Watched"
+                    content = ratings_content)
         self.response.write(response)
 
 
