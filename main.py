@@ -44,7 +44,7 @@ class Index(webapp2.RequestHandler):
                         movies = getUnwatchedMovies(),
                         error = self.request.get("error"))
         response = t_scaffolding.render(
-                    title = "FlickList: Edit My Watchlist",
+                    title = "FlickList: Movies I Want to Watch",
                     content = frontpage_content)
         self.response.write(response)
 
@@ -107,7 +107,7 @@ class WatchedMovie(webapp2.RequestHandler):
         t_watched_it = jinja_env.get_template("watched-it-confirmation.html")
         watched_it_content = t_watched_it.render(movie = watched_movie)
         response = t_scaffolding.render(
-                    title = "FlickList: Cross a Movie Off",
+                    title = "FlickList: Watched a Movie",
                     content = watched_it_content)
         self.response.write(response)
 
@@ -118,7 +118,7 @@ class MovieRatings(webapp2.RequestHandler):
         t_ratings = jinja_env.get_template("ratings.html")
         ratings_content = t_ratings.render(movies = getWatchedMovies())
         response = t_scaffolding.render(
-                    title = "FlickList: Movies I have Watched"
+                    title = "FlickList: Movies I have Watched",
                     content = ratings_content)
         self.response.write(response)
 
