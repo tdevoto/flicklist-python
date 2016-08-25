@@ -23,7 +23,9 @@ terrible_movies = [
 
 class Movie(db.Model):
     title = db.StringProperty(required = True)
-    created = db.StringProperty(auto_now_add = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+    watched = db.BooleanProperty(required = True, default = False)
+    rating = db.StringProperty()
 
 
 def getUnwatchedMovies():
@@ -56,9 +58,10 @@ class Index(Handler):
     """
 
     def get(self):
+        unwatched_movies = db.GqlQuery("SELECT * FROM Movie where watched = False")
         t_frontpage = jinja_env.get_template("frontpage.html")
         frontpage_content = t_frontpage.render(
-                                movies = getUnwatchedMovies(),
+                                movies = unwatched_movies,
                                 error = self.request.get("error"))
         response = t_scaffolding.render(
                     title = "FlickList: Movies I Want to Watch",
@@ -72,24 +75,28 @@ class AddMovie(Handler):
     """
 
     def post(self):
-        new_movie = self.request.get("new-movie")
+        new_movie_title = self.request.get("new-movie")
 
         # if the user typed nothing at all, redirect and yell at them
-        if (not new_movie) or (new_movie.strip() == ""):
+        if (not new_movie_title) or (new_movie_title.strip() == ""):
             error = "Please specify the movie you want to add."
             self.redirect("/?error=" + cgi.escape(error))
 
         # if the user wants to add a terrible movie, redirect and yell at them
-        if new_movie in terrible_movies:
-            error = "Trust me, you don't want to add '{0}' to your Watchlist.".format(new_movie)
+        if new_movie_title in terrible_movies:
+            error = "Trust me, you don't want to add '{0}' to your Watchlist.".format(new_movie_title)
             self.redirect("/?error=" + cgi.escape(error, quote=True))
 
         # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
-        new_movie_escaped = cgi.escape(new_movie, quote=True)
+        new_movie_title_escaped = cgi.escape(new_movie_title, quote=True)
+
+        # construct a movie object for the new movie
+        movie = Movie(title = new_movie_title_escaped)
+        movie.put()
 
         # render the confirmation message
         t_add = jinja_env.get_template("add-confirmation.html")
-        add_content = t_add.render(movie = new_movie_escaped)
+        add_content = t_add.render(movie = new_movie_title_escaped)
         response = t_scaffolding.render(
                         title = "FlickList: Add a Movie",
                         content = add_content)
