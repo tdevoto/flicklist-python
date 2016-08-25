@@ -109,18 +109,18 @@ class WatchedMovie(Handler):
     """
 
     def post(self):
-        watched_movie = self.request.get("watched-movie")
+        watched_movie_id = self.request.get("watched-movie")
 
-        # if the movie movie is just whitespace (or nonexistant), reject.
-        # (we didn't check for this last time--only checked in the AddMovie handler--but we probably should have!)
-        if not watched_movie or watched_movie.strip() == "":
+        watched_movie = Movie.get_by_id( int(watched_movie_id) )
+
+        # if we can't find the movie, reject.
+        if not watched_movie:
             self.renderError(400)
             return
 
-        # if user tried to cross off a movie that is not in their list, reject
-        if not (watched_movie in getUnwatchedMovies()):
-            self.renderError(400)
-            return
+        # update the movie's ".watched" property to True
+        watched_movie.watched = True
+        watched_movie.put()
 
         # render confirmation page
         t_watched_it = jinja_env.get_template("watched-it-confirmation.html")
