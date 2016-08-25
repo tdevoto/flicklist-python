@@ -134,6 +134,7 @@ class WatchedMovie(Handler):
 class MovieRatings(Handler):
 
     def get(self):
+        # query for all the movies that have been watched, most recent first
         watched_movies = db.GqlQuery("SELECT * FROM Movie WHERE watched = True ORDER BY created desc")
         t_ratings = jinja_env.get_template("ratings.html")
         ratings_content = t_ratings.render(movies = watched_movies)
