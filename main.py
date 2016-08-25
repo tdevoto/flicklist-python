@@ -135,7 +135,6 @@ class MovieRatings(webapp2.RequestHandler):
 
 
 
-
 app = webapp2.WSGIApplication([
     ('/', Index),
     ('/add', AddMovie),
