@@ -23,19 +23,6 @@ class Movie(db.Model):
     watched = db.BooleanProperty(required = True, default = False)
     rating = db.StringProperty()
 
-
-def getUnwatchedMovies():
-    """ Returns the list of movies the user wants to watch (but hasnt yet) """
-
-    return [ "Star Wars", "Minions", "Freaky Friday", "My Favorite Martian" ]
-
-
-def getWatchedMovies():
-    """ Returns the list of movies the user has already watched """
-
-    return [ "The Matrix", "The Big Green", "Ping Ping Playa" ]
-
-
 class Handler(webapp2.RequestHandler):
     """ A base RequestHandler class for our app.
         The other handlers inherit form this one.
@@ -125,13 +112,7 @@ class WatchedMovie(Handler):
 class MovieRatings(Handler):
 
     def get(self):
-        # TODO 1
-        # Make a GQL query for all the movies that have been watched
-        watched_movies = [] # type something else instead of an empty list
-
-        # TODO (extra credit)
-        # in the query above, add something so that the movies are sorted by creation date, most recent first
-
+        watched_movies = db.GqlQuery("SELECT * FROM Movie where watched = True order by created desc")
         t = jinja_env.get_template("ratings.html")
         response = t.render(movies = watched_movies)
         self.response.write(response)
@@ -140,14 +121,11 @@ class MovieRatings(Handler):
         rating = self.request.get("rating")
         movie_id = self.request.get("movie")
 
-        # TODO 2
-        # retreive the movie entity whose id is movie_id
-        movie = None # type something else instead of None
+        movie = Movie.get_by_id( int(movie_id) )
 
         if movie and rating:
-            # TODO 3
-            # update the movie's rating property and save it to the database
-
+            movie.rating = rating
+            movie.put()
 
             # render confirmation
             t = jinja_env.get_template("rating-confirmation.html")
