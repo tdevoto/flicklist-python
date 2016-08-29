@@ -3,13 +3,9 @@ import cgi
 import jinja2
 import os
 
-
 # set up jinja
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir))
-
-# we'll use this template in a few places
-t_scaffolding = jinja_env.get_template("scaffolding.html")
 
 # a list of movies that nobody should be allowed to watch
 terrible_movies = [
@@ -51,15 +47,11 @@ class Index(Handler):
     """
 
     def get(self):
-        t_frontpage = jinja_env.get_template("frontpage.html")
-        frontpage_content = t_frontpage.render(
-                                movies = getUnwatchedMovies(),
-                                error = self.request.get("error"))
-        response = t_scaffolding.render(
-                    title = "FlickList: Movies I Want to Watch",
-                    content = frontpage_content)
+        t = jinja_env.get_template("frontpage.html")
+        response = t.render(
+                        movies = getUnwatchedMovies(),
+                        error = self.request.get("error"))
         self.response.write(response)
-
 
 class AddMovie(Handler):
     """ Handles requests coming in to '/add'
@@ -83,11 +75,8 @@ class AddMovie(Handler):
         new_movie_escaped = cgi.escape(new_movie, quote=True)
 
         # render the confirmation message
-        t_add = jinja_env.get_template("add-confirmation.html")
-        add_content = t_add.render(movie = new_movie_escaped)
-        response = t_scaffolding.render(
-                        title = "FlickList: Add a Movie",
-                        content = add_content)
+        t = jinja_env.get_template("add-confirmation.html")
+        response = t.render(movie = new_movie_escaped)
         self.response.write(response)
 
 
@@ -95,6 +84,11 @@ class WatchedMovie(Handler):
     """ Handles requests coming in to '/watched-it'
         e.g. www.flicklist.com/watched-it
     """
+
+    def renderError(self, error_code):
+        self.error(error_code)
+        self.response.write("Oops! Something went wrong.")
+
 
     def post(self):
         watched_movie = self.request.get("watched-movie")
@@ -111,39 +105,27 @@ class WatchedMovie(Handler):
             return
 
         # render confirmation page
-        t_watched_it = jinja_env.get_template("watched-it-confirmation.html")
-        watched_it_content = t_watched_it.render(movie = watched_movie)
-        response = t_scaffolding.render(
-                    title = "FlickList: Watched a Movie",
-                    content = watched_it_content)
+        t = jinja_env.get_template("watched-it-confirmation.html")
+        response = t.render(movie = watched_movie)
         self.response.write(response)
 
 
 class MovieRatings(Handler):
 
     def get(self):
-        t_ratings = jinja_env.get_template("ratings.html")
-        ratings_content = t_ratings.render(movies = getWatchedMovies())
-        response = t_scaffolding.render(
-                    title = "FlickList: Movies I have Watched",
-                    content = ratings_content)
+        t = jinja_env.get_template("ratings.html")
+        response = t.render(movies = getWatchedMovies())
         self.response.write(response)
 
     def post(self):
         movie = self.request.get("movie")
         rating = self.request.get("rating")
         if movie and rating:
-            t_rating_confirmation = jinja_env.get_template("rating-confirmation.html")
-            confirmation_content = t_rating_confirmation.render(
-                                    movie = movie,
-                                    rating = rating)
-            response = t_scaffolding.render(
-                        title = "FlickList: Rate a Movie",
-                        content = confirmation_content)
+            t = jinja_env.get_template("rating-confirmation.html")
+            response = t.render(movie = movie, rating = rating)
             self.response.write(response)
         else:
             self.renderError(400)
-            return
 
 
 app = webapp2.WSGIApplication([
