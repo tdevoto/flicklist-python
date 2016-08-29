@@ -1,4 +1,6 @@
+{% extends "base.html" %}
 
+{% block content %}
 <h2>Movies I Want to Watch:</h2>
 
 <ul>
@@ -22,3 +24,4 @@
 </form>
 
 <p class="error">{{ error if error else "" }}</p>
+{% endblock %}

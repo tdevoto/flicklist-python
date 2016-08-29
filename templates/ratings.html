@@ -1,10 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h2>Movies I Have Watched:</h2>
 
 <ul>
 {% for movie in movies %}
     <li>
         <h3>{{ movie.title }}</h3>
-
         <form action="/ratings" method="post">
             <label>
                 My Rating:
@@ -22,3 +24,4 @@
     </li>
 {% endfor %}
 </ul>
+{% endblock %}
