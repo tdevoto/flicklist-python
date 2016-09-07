@@ -18,6 +18,12 @@ terrible_movies = [
     "Nine Lives"
 ]
 
+allowed_paths = [
+    "/login",
+    "/logout",
+    "/register"
+]
+
 
 class Movie(db.Model):
     title = db.StringProperty(required = True)
@@ -35,6 +41,32 @@ class Handler(webapp2.RequestHandler):
 
         self.error(error_code)
         self.response.write("Oops! Something went wrong.")
+
+    def login_user(self, user):
+        """ Login a user specified by a User object user """
+        user_id = user.key().id()
+        self.set_secure_cookie('user_id', str(user_id))
+
+    def logout_user(self):
+        """ Logout a user specified by a User object user """
+        self.set_secure_cookie('user_id', '')
+
+    def read_secure_cookie(self, name):
+        cookie_val = self.request.cookies.get(name)
+        if cookie_val:
+            return hashutils.check_secure_val(cookie_val)
+
+    def set_secure_cookie(self, name, val):
+        cookie_val = hashutils.make_secure_val(val)
+        self.response.headers.add_header('Set-Cookie', '%s=%s; Path=/' % (name, cookie_val))
+
+    def initialize(self, *a, **kw):
+        webapp2.RequestHandler.initialize(self, *a, **kw)
+        uid = self.read_secure_cookie('user_id')
+        self.user = uid and User.get_by_id(int(uid))
+
+        if not self.user and self.request.path not in allowed_paths:
+            self.redirect('/login')
 
 
 class Index(Handler):
@@ -141,5 +173,8 @@ app = webapp2.WSGIApplication([
     ('/', Index),
     ('/add', AddMovie),
     ('/watched-it', WatchedMovie),
-    ('/ratings', MovieRatings)
+    ('/ratings', MovieRatings),
+    ('/login', Login),
+    ('/logout', Logout),
+    ('/register', Register)
 ], debug=True)
