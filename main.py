@@ -31,6 +31,11 @@ class Movie(db.Model):
     watched = db.BooleanProperty(required = True, default = False)
     rating = db.StringProperty()
 
+class User(db.Model):
+    username = db.StringProperty(required = True)
+    pw_hash = db.StringProperty(required = True)
+
+
 class Handler(webapp2.RequestHandler):
     """ A base RequestHandler class for our app.
         The other handlers inherit form this one.
@@ -67,6 +72,9 @@ class Handler(webapp2.RequestHandler):
 
         if not self.user and self.request.path not in allowed_paths:
             self.redirect('/login')
+
+    def get_user_by_name(self, username):
+        return None
 
 
 class Index(Handler):
@@ -168,6 +176,106 @@ class MovieRatings(Handler):
         else:
             self.renderError(400)
 
+class Login(Handler):
+
+    def render_login_form(self, error=""):
+        t = jinja_env.get_template("login.html")
+        response = t.render(error=error)
+        self.response.write(response)
+
+    def get(self):
+        self.render_login_form()
+
+    def post(self):
+        submitted_username = self.request.get("username")
+        submitted_password = self.request.get("password")
+
+        user = self.get_user_by_name(submitted_username)
+        if not user:
+            self.render_login_form(error = "Invalid username")
+        elif not hashutils.valid_pw(submitted_username, submitted_password, user.pw_hash):
+            self.render_login_form(error = "Invalid password")
+        else:
+            self.login_user(user)
+            self.redirect("/")
+
+
+class Logout(Handler):
+
+    def get(self):
+        self.logout_user()
+        self.redirect("/login")
+
+
+class Register(Handler):
+
+
+    def validate_username(self, username):
+        USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+        if USER_RE.match(username):
+            return username
+        else:
+            return ""
+
+    def validate_password(self, password):
+        PWD_RE = re.compile(r"^.{3,20}$")
+        if PWD_RE.match(password):
+            return password
+        else:
+            return ""
+
+    def validate_verify(self, password, verify):
+        if password == verify:
+            return verify
+
+    def get(self):
+        t = jinja_env.get_template("register.html")
+        response = t.render(errors={})
+        self.response.out.write(response)
+
+    def post(self):
+
+        submitted_username = self.request.get("username")
+        submitted_password = self.request.get("password")
+        submitted_verify = self.request.get("verify")
+
+        username = self.validate_username(submitted_username)
+        password = self.validate_password(submitted_password)
+        verify = self.validate_verify(submitted_password, submitted_verify)
+
+        errors = {}
+        existing_user = self.get_user_by_name(username)
+        has_error = False
+
+        if existing_user:
+            errors['username_error'] = "A user with that username already exists"
+            has_error = True
+        elif (username and password and verify):
+
+            # create new user object
+            pw_hash = hashutils.make_pw_hash(username, password)
+            user = User(username=username, pw_hash=pw_hash)
+            user.put()
+
+            self.login_user(user)
+        else:
+            has_error = True
+
+            if not username:
+                errors['username_error'] = "That's not a valid username"
+
+            if not password:
+                errors['password_error'] = "That's not a valid password"
+
+            if not verify:
+                errors['verify_error'] = "Passwords don't match"
+
+        if has_error:
+            t = jinja_env.get_template("register.html")
+            response = t.render(username=username, errors=errors)
+            self.response.out.write(response)
+        else:
+            self.redirect('/')
 
 app = webapp2.WSGIApplication([
     ('/', Index),
