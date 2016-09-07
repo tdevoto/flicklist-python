@@ -3,6 +3,8 @@ import cgi
 import jinja2
 import os
 from google.appengine.ext import db
+import hashutils
+
 
 # set up jinja
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
