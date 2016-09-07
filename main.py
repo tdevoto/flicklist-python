@@ -3,7 +3,9 @@ import cgi
 import jinja2
 import os
 from google.appengine.ext import db
+import re
 import hashutils
+
 
 
 # set up jinja
@@ -74,7 +76,9 @@ class Handler(webapp2.RequestHandler):
             self.redirect('/login')
 
     def get_user_by_name(self, username):
-        return None
+        user = db.GqlQuery("SELECT * from User WHERE username = '%s'" % username)
+        if user:
+            return user.get()
 
 
 class Index(Handler):
