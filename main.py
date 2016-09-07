@@ -4,6 +4,7 @@ import jinja2
 import os
 from google.appengine.ext import db
 import re
+import datetime
 import hashutils
 
 
@@ -36,6 +37,7 @@ class Movie(db.Model):
     title = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     watched = db.BooleanProperty(required = True, default = False)
+    datetime_watched = db.DateTimeProperty()
     rating = db.StringProperty()
     owner = db.ReferenceProperty(User, required = True)
 
@@ -145,6 +147,8 @@ class WatchedMovie(Handler):
         watched_movie_id = self.request.get("watched-movie")
 
         watched_movie = Movie.get_by_id( int(watched_movie_id) )
+        watched_movie.datetime_watched = datetime.datetime.now()
+        watched_movie.put()
 
         # if we can't find the movie, reject.
         if not watched_movie:
