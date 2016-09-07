@@ -89,7 +89,11 @@ class Index(Handler):
     """
 
     def get(self):
-        unwatched_movies = db.GqlQuery("SELECT * FROM Movie where watched = False")
+        query = Movie.all().filter("owner", self.user).filter("watched", False)
+        unwatched_movies = query.run()
+
+        #db.GqlQuery("SELECT * FROM Movie WHERE watched = False")
+
         t = jinja_env.get_template("frontpage.html")
         response = t.render(
                         movies = unwatched_movies,
@@ -160,7 +164,8 @@ class WatchedMovie(Handler):
 class MovieRatings(Handler):
 
     def get(self):
-        watched_movies = db.GqlQuery("SELECT * FROM Movie where watched = True order by created desc")
+        query = Movie.all().filter("owner", self.user).filter("watched", True)
+        watched_movies = query.run() #db.GqlQuery("SELECT * FROM Movie where watched = True order by created desc")
         t = jinja_env.get_template("ratings.html")
         response = t.render(movies = watched_movies)
         self.response.write(response)
