@@ -27,15 +27,17 @@ allowed_paths = [
 ]
 
 
+class User(db.Model):
+    username = db.StringProperty(required = True)
+    pw_hash = db.StringProperty(required = True)
+
+
 class Movie(db.Model):
     title = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     watched = db.BooleanProperty(required = True, default = False)
     rating = db.StringProperty()
-
-class User(db.Model):
-    username = db.StringProperty(required = True)
-    pw_hash = db.StringProperty(required = True)
+    owner = db.ReferenceProperty(User, required = True)
 
 
 class Handler(webapp2.RequestHandler):
@@ -116,7 +118,7 @@ class AddMovie(Handler):
         new_movie_title_escaped = cgi.escape(new_movie_title, quote=True)
 
         # construct a movie object for the new movie
-        movie = Movie(title = new_movie_title_escaped)
+        movie = Movie(title = new_movie_title_escaped, owner = self.user)
         movie.put()
 
         # render the confirmation message
