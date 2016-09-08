@@ -103,9 +103,11 @@ class Index(Handler):
     def get(self):
         """ Display the homepage (the list of unwatched movies) """
 
-        # query for all the movies belonging to this user that have not yet been watched
-        query = Movie.all().filter("owner", self.user).filter("watched", False)
-        unwatched_movies = query.run()
+        # TODO 1
+        # We only want the Movies belonging to the current user
+        # Modify the query below.
+        # Instead of a GqlQuery, use an O.R.M. method like lines 186 and 187
+        unwatched_movies = db.GqlQuery("SELECT * FROM Movie WHERE watched = False")
 
         t = jinja_env.get_template("frontpage.html")
         response = t.render(
@@ -345,7 +347,7 @@ app = webapp2.WSGIApplication([
     ('/watched-it', WatchedMovie),
     ('/ratings', MovieRatings),
 
-    # TODO 2
+    # TODO 3
     # include another route for recently watched movies
 
     ('/login', Login),
