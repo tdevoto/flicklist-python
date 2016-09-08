@@ -197,6 +197,7 @@ class MovieRatings(Handler):
         movie = Movie.get_by_id( int(movie_id) )
 
         if movie and rating:
+            # update the rating of the movie object
             movie.rating = rating
             movie.put()
 
@@ -262,8 +263,8 @@ class Logout(Handler):
 class Register(Handler):
 
     def validate_username(self, username):
-        """ Returns the username string untouched if it is valid
-            , otherwise returns an empty string
+        """ Returns the username string untouched if it is valid,
+            otherwise returns an empty string
         """
         USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
         if USER_RE.match(username):
