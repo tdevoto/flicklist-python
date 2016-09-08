@@ -113,6 +113,7 @@ class Index(Handler):
                         error = self.request.get("error"))
         self.response.write(response)
 
+
 class AddMovie(Handler):
     """ Handles requests coming in to '/add'
         e.g. www.flicklist.com/add
@@ -261,7 +262,9 @@ class Logout(Handler):
 class Register(Handler):
 
     def validate_username(self, username):
-        """ Returns the username string untouched if it is valid, otherwise returns an empty string """
+        """ Returns the username string untouched if it is valid
+            , otherwise returns an empty string
+        """
         USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
         if USER_RE.match(username):
             return username
@@ -269,7 +272,9 @@ class Register(Handler):
             return ""
 
     def validate_password(self, password):
-        """ Returns the password string untouched if it is valid, otherwise returns an empty string """
+        """ Returns the password string untouched if it is valid,
+            otherwise returns an empty string
+        """
         PWD_RE = re.compile(r"^.{3,20}$")
         if PWD_RE.match(password):
             return password
@@ -307,7 +312,6 @@ class Register(Handler):
             errors['username_error'] = "A user with that username already exists"
             has_error = True
         elif (username and password and verify):
-
             # create new user object
             pw_hash = hashutils.make_pw_hash(username, password)
             user = User(username=username, pw_hash=pw_hash)
