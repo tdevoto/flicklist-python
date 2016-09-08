@@ -1,10 +1,5 @@
-import webapp2
-import cgi
-import jinja2
-import os
+import webapp2, cgi, jinja2, os, re, datetime
 from google.appengine.ext import db
-import re
-import datetime
 import hashutils
 
 
@@ -21,7 +16,9 @@ terrible_movies = [
     "Nine Lives"
 ]
 
-allowed_paths = [
+# a list of pages that anyone is allowed to visit
+# (any others require logging in)
+allowed_routes = [
     "/login",
     "/logout",
     "/register"
@@ -29,11 +26,14 @@ allowed_paths = [
 
 
 class User(db.Model):
+    """ Represents a user on our site """
     username = db.StringProperty(required = True)
     pw_hash = db.StringProperty(required = True)
 
 
 class Movie(db.Model):
+    """ Represents a movie that a user wants to watch or has watched """
+
     title = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     watched = db.BooleanProperty(required = True, default = False)
@@ -49,37 +49,48 @@ class Handler(webapp2.RequestHandler):
 
     def renderError(self, error_code):
         """ Sends an HTTP error code and a generic "oops!" message to the client. """
-
         self.error(error_code)
         self.response.write("Oops! Something went wrong.")
 
     def login_user(self, user):
-        """ Login a user specified by a User object user """
+        """ Logs in a user specified by a User object """
         user_id = user.key().id()
         self.set_secure_cookie('user_id', str(user_id))
 
     def logout_user(self):
-        """ Logout a user specified by a User object user """
+        """ Logs out the current user """
         self.set_secure_cookie('user_id', '')
 
     def read_secure_cookie(self, name):
+        """ Returns the value associated with a name in the user's cookie,
+            or returns None, if no value was found or the value is not valid
+        """
         cookie_val = self.request.cookies.get(name)
         if cookie_val:
             return hashutils.check_secure_val(cookie_val)
 
     def set_secure_cookie(self, name, val):
+        """ Adds a secure name-value pair cookie to the response """
         cookie_val = hashutils.make_secure_val(val)
         self.response.headers.add_header('Set-Cookie', '%s=%s; Path=/' % (name, cookie_val))
 
     def initialize(self, *a, **kw):
+        """ Any subclass of webapp2.RequestHandler can implement a method called 'initialize'
+            to specify what should happen before handling a request.
+
+            Here, we use it to ensure that the user is logged in.
+            If not, and they try to visit a page that requires an logging in (like /ratings),
+            then we redirect them to the /login page
+        """
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.get_by_id(int(uid))
 
-        if not self.user and self.request.path not in allowed_paths:
+        if not self.user and self.request.path not in allowed_routes:
             self.redirect('/login')
 
     def get_user_by_name(self, username):
+        """ Given a username, try to fetch the user from the database """
         user = db.GqlQuery("SELECT * from User WHERE username = '%s'" % username)
         if user:
             return user.get()
@@ -138,11 +149,6 @@ class WatchedMovie(Handler):
         e.g. www.flicklist.com/watched-it
     """
 
-    def renderError(self, error_code):
-        self.error(error_code)
-        self.response.write("Oops! Something went wrong.")
-
-
     def post(self):
         watched_movie_id = self.request.get("watched-movie")
 
@@ -166,10 +172,13 @@ class WatchedMovie(Handler):
 
 
 class MovieRatings(Handler):
-
+    """ Handles requests coming in to '/ratings'
+    """
     def get(self):
+        # query for movies that the current user has already watched
         query = Movie.all().filter("owner", self.user).filter("watched", True)
-        watched_movies = query.run() #db.GqlQuery("SELECT * FROM Movie where watched = True order by created desc")
+        watched_movies = query.run()
+
         t = jinja_env.get_template("ratings.html")
         response = t.render(movies = watched_movies)
         self.response.write(response)
@@ -192,9 +201,12 @@ class MovieRatings(Handler):
             self.renderError(400)
 
 class RecentlyWatchedMovies(Handler):
-
+    """ Handles requests coming in to '/recently-watched'
+    """
     def get(self):
-        query = Movie.all().order("-datetime_watched")
+        # query for watched movies (by any user), sorted by how recently the movie was watched
+        query = Movie.all().filter("watched", True).order("-datetime_watched")
+        # get the first 20 results
         recently_watched_movies = query.fetch(limit = 20)
 
         t = jinja_env.get_template("recently-watched.html")
@@ -234,7 +246,6 @@ class Logout(Handler):
 
 
 class Register(Handler):
-
 
     def validate_username(self, username):
         USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -303,12 +314,16 @@ class Register(Handler):
         else:
             self.redirect('/')
 
+
 app = webapp2.WSGIApplication([
     ('/', Index),
     ('/add', AddMovie),
     ('/watched-it', WatchedMovie),
     ('/ratings', MovieRatings),
-    ('/recently-watched', RecentlyWatchedMovies),
+
+    # TODO 2
+    # include another route for recently watched movies
+
     ('/login', Login),
     ('/logout', Logout),
     ('/register', Register)
