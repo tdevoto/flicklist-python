@@ -1,7 +1,7 @@
-import webapp2, cgi, jinja2, os, re, datetime
+import webapp2, cgi, jinja2, os, re
 from google.appengine.ext import db
+from datetime import datetime
 import hashutils
-
 
 
 # set up jinja
@@ -33,7 +33,6 @@ class User(db.Model):
 
 class Movie(db.Model):
     """ Represents a movie that a user wants to watch or has watched """
-
     title = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     watched = db.BooleanProperty(required = True, default = False)
@@ -102,10 +101,11 @@ class Index(Handler):
     """
 
     def get(self):
+        """ Display the homepage (the list of unwatched movies) """
+
+        # query for all the movies belonging to this user that have not yet been watched
         query = Movie.all().filter("owner", self.user).filter("watched", False)
         unwatched_movies = query.run()
-
-        #db.GqlQuery("SELECT * FROM Movie WHERE watched = False")
 
         t = jinja_env.get_template("frontpage.html")
         response = t.render(
@@ -119,6 +119,8 @@ class AddMovie(Handler):
     """
 
     def post(self):
+        """ User wants to add a new movie to their list """
+
         new_movie_title = self.request.get("new-movie")
 
         # if the user typed nothing at all, redirect and yell at them
@@ -150,19 +152,18 @@ class WatchedMovie(Handler):
     """
 
     def post(self):
+        """ User has watched a movie. """
         watched_movie_id = self.request.get("watched-movie")
-
         watched_movie = Movie.get_by_id( int(watched_movie_id) )
-        watched_movie.datetime_watched = datetime.datetime.now()
-        watched_movie.put()
 
         # if we can't find the movie, reject.
         if not watched_movie:
             self.renderError(400)
             return
 
-        # update the movie's ".watched" property to True
+        # update the movie object to say the user watched it at this date in time
         watched_movie.watched = True
+        watched_movie.datetime_watched = datetime.now()
         watched_movie.put()
 
         # render confirmation page
@@ -174,7 +175,10 @@ class WatchedMovie(Handler):
 class MovieRatings(Handler):
     """ Handles requests coming in to '/ratings'
     """
+
     def get(self):
+        """ Show a list of the movies the user has already watched """
+
         # query for movies that the current user has already watched
         query = Movie.all().filter("owner", self.user).filter("watched", True)
         watched_movies = query.run()
@@ -184,6 +188,8 @@ class MovieRatings(Handler):
         self.response.write(response)
 
     def post(self):
+        """ User wants to rate a movie """
+
         rating = self.request.get("rating")
         movie_id = self.request.get("movie")
 
@@ -203,6 +209,7 @@ class MovieRatings(Handler):
 class RecentlyWatchedMovies(Handler):
     """ Handles requests coming in to '/recently-watched'
     """
+    
     def get(self):
         # query for watched movies (by any user), sorted by how recently the movie was watched
         query = Movie.all().filter("watched", True).order("-datetime_watched")

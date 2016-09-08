@@ -1,3 +1,12 @@
+#####################################################
+#
+# hashutils
+#
+# A handful of hashing utility functions
+# to help us encrypt and decrypt sensitive user info
+#
+#####################################################
+
 import random, string, hashlib, hmac
 
 def make_salt():
