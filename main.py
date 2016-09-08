@@ -191,6 +191,17 @@ class MovieRatings(Handler):
         else:
             self.renderError(400)
 
+class RecentlyWatchedMovies(Handler):
+
+    def get(self):
+        query = Movie.all().order("-datetime_watched")
+        recently_watched_movies = query.fetch(limit = 20)
+
+        t = jinja_env.get_template("recently-watched.html")
+        response = t.render(movies = recently_watched_movies)
+        self.response.write(response)
+
+
 class Login(Handler):
 
     def render_login_form(self, error=""):
@@ -297,6 +308,7 @@ app = webapp2.WSGIApplication([
     ('/add', AddMovie),
     ('/watched-it', WatchedMovie),
     ('/ratings', MovieRatings),
+    ('/recently-watched', RecentlyWatchedMovies),
     ('/login', Login),
     ('/logout', Logout),
     ('/register', Register)

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Recently Watched Movies</h2>
+<ul>
+{% for movie in movies %}
+    <li>
+        <strong>{{ movie.owner.username }}</strong>
+        watched <strong>{{ movie.title }}</strong>
+        {% if movie.rating %}
+            and gave it <strong>{{ movie.rating }}</strong> stars.
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}
