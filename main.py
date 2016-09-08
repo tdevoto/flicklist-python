@@ -206,11 +206,14 @@ class MovieRatings(Handler):
         else:
             self.renderError(400)
 
+
 class RecentlyWatchedMovies(Handler):
     """ Handles requests coming in to '/recently-watched'
     """
-    
+
     def get(self):
+        """ Display a list of movies that have recently been watched (by any user) """
+
         # query for watched movies (by any user), sorted by how recently the movie was watched
         query = Movie.all().filter("watched", True).order("-datetime_watched")
         # get the first 20 results
@@ -229,9 +232,11 @@ class Login(Handler):
         self.response.write(response)
 
     def get(self):
+        """ Display the login page """
         self.render_login_form()
 
     def post(self):
+        """ User is trying to log in """
         submitted_username = self.request.get("username")
         submitted_password = self.request.get("password")
 
@@ -248,6 +253,7 @@ class Login(Handler):
 class Logout(Handler):
 
     def get(self):
+        """ User is trying to log out """
         self.logout_user()
         self.redirect("/login")
 
@@ -255,6 +261,7 @@ class Logout(Handler):
 class Register(Handler):
 
     def validate_username(self, username):
+        """ Returns the username string untouched if it is valid, otherwise returns an empty string """
         USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
         if USER_RE.match(username):
             return username
@@ -262,6 +269,7 @@ class Register(Handler):
             return ""
 
     def validate_password(self, password):
+        """ Returns the password string untouched if it is valid, otherwise returns an empty string """
         PWD_RE = re.compile(r"^.{3,20}$")
         if PWD_RE.match(password):
             return password
@@ -269,16 +277,20 @@ class Register(Handler):
             return ""
 
     def validate_verify(self, password, verify):
+        """ Returns the password verification string untouched if it matches
+            the password, otherwise returns an empty string
+        """
         if password == verify:
             return verify
 
     def get(self):
+        """ Display the registration page """
         t = jinja_env.get_template("register.html")
         response = t.render(errors={})
         self.response.out.write(response)
 
     def post(self):
-
+        """ User is trying to register """
         submitted_username = self.request.get("username")
         submitted_password = self.request.get("password")
         submitted_verify = self.request.get("verify")
