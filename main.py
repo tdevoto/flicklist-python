@@ -36,9 +36,7 @@ class Movie(db.Model):
     title = db.StringProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     watched = db.BooleanProperty(required = True, default = False)
-    datetime_watched = db.DateTimeProperty()
     rating = db.StringProperty()
-    owner = db.ReferenceProperty(User, required = True)
 
 
 class Handler(webapp2.RequestHandler):
@@ -103,9 +101,8 @@ class Index(Handler):
     def get(self):
         """ Display the homepage (the list of unwatched movies) """
 
-        # query for all the movies belonging to this user that have not yet been watched
-        query = Movie.all().filter("owner", self.user).filter("watched", False)
-        unwatched_movies = query.run()
+        # query for all the movies that have not yet been watched
+        unwatched_movies = db.GqlQuery("SELECT * FROM Movie WHERE watched = False")
 
         t = jinja_env.get_template("frontpage.html")
         response = t.render(
@@ -138,7 +135,7 @@ class AddMovie(Handler):
         new_movie_title_escaped = cgi.escape(new_movie_title, quote=True)
 
         # construct a movie object for the new movie
-        movie = Movie(title = new_movie_title_escaped, owner = self.user)
+        movie = Movie(title = new_movie_title_escaped)
         movie.put()
 
         # render the confirmation message
@@ -164,7 +161,6 @@ class WatchedMovie(Handler):
 
         # update the movie object to say the user watched it at this date in time
         watched_movie.watched = True
-        watched_movie.datetime_watched = datetime.now()
         watched_movie.put()
 
         # render confirmation page
@@ -180,9 +176,8 @@ class MovieRatings(Handler):
     def get(self):
         """ Show a list of the movies the user has already watched """
 
-        # query for movies that the current user has already watched
-        query = Movie.all().filter("owner", self.user).filter("watched", True)
-        watched_movies = query.run()
+        # query for movies that have already been watched
+        watched_movies = db.GqlQuery("SELECT * FROM Movie WHERE watched = True")
 
         t = jinja_env.get_template("ratings.html")
         response = t.render(movies = watched_movies)
@@ -207,23 +202,6 @@ class MovieRatings(Handler):
             self.response.write(response)
         else:
             self.renderError(400)
-
-
-class RecentlyWatchedMovies(Handler):
-    """ Handles requests coming in to '/recently-watched'
-    """
-
-    def get(self):
-        """ Display a list of movies that have recently been watched (by any user) """
-
-        # query for watched movies (by any user), sorted by how recently the movie was watched
-        query = Movie.all().filter("watched", True).order("-datetime_watched")
-        # get the first 20 results
-        recently_watched_movies = query.fetch(limit = 20)
-
-        t = jinja_env.get_template("recently-watched.html")
-        response = t.render(movies = recently_watched_movies)
-        self.response.write(response)
 
 
 class Login(Handler):
@@ -344,10 +322,6 @@ app = webapp2.WSGIApplication([
     ('/add', AddMovie),
     ('/watched-it', WatchedMovie),
     ('/ratings', MovieRatings),
-
-    # TODO 2
-    # include another route for recently watched movies
-
     ('/login', Login),
     ('/logout', Logout),
     ('/register', Register)
