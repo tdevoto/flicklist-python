@@ -223,8 +223,13 @@ class RecentlyWatchedMovies(Handler):
         # get the first 20 results
         recently_watched_movies = query.fetch(limit = 20)
 
-        t = jinja_env.get_template("recently-watched.html")
-        response = t.render(movies = recently_watched_movies)
+        # TODO 4
+        # Replace the code below with code that renders the 'recently-watched.html' template
+        # Don't forget to pass recently_watched_movies over to your template.
+        response = ""
+        for movie in recently_watched_movies:
+            response += movie.title + ", "
+
         self.response.write(response)
 
 
