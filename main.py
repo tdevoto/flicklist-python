@@ -87,6 +87,7 @@ class Handler(webapp2.RequestHandler):
 
         if not self.user and self.request.path not in allowed_routes:
             self.redirect('/login')
+            return
 
     def get_user_by_name(self, username):
         """ Given a username, try to fetch the user from the database """
@@ -130,11 +131,13 @@ class AddMovie(Handler):
         if (not new_movie_title) or (new_movie_title.strip() == ""):
             error = "Please specify the movie you want to add."
             self.redirect("/?error=" + cgi.escape(error))
+            return
 
         # if the user wants to add a terrible movie, redirect and yell at them
         if new_movie_title in terrible_movies:
             error = "Trust me, you don't want to add '{0}' to your Watchlist.".format(new_movie_title)
             self.redirect("/?error=" + cgi.escape(error, quote=True))
+            return
 
         # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
         new_movie_title_escaped = cgi.escape(new_movie_title, quote=True)
