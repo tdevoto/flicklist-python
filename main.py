@@ -75,7 +75,7 @@ class Handler(webapp2.RequestHandler):
             to specify what should happen before handling a request.
 
             Here, we use it to ensure that the user is logged in.
-            If not, and they try to visit a page that requires an logging in (like /ratings),
+            If not, and they try to visit a page that requires logging in (like /ratings),
             then we redirect them to the /login page
         """
         webapp2.RequestHandler.initialize(self, *a, **kw)
@@ -84,6 +84,7 @@ class Handler(webapp2.RequestHandler):
 
         if not self.user and self.request.path not in allowed_routes:
             self.redirect('/login')
+            return
 
     def get_user_by_name(self, username):
         """ Given a username, try to fetch the user from the database """
@@ -124,11 +125,13 @@ class AddMovie(Handler):
         if (not new_movie_title) or (new_movie_title.strip() == ""):
             error = "Please specify the movie you want to add."
             self.redirect("/?error=" + cgi.escape(error))
+            return
 
         # if the user wants to add a terrible movie, redirect and yell at them
         if new_movie_title in terrible_movies:
             error = "Trust me, you don't want to add '{0}' to your Watchlist.".format(new_movie_title)
             self.redirect("/?error=" + cgi.escape(error, quote=True))
+            return
 
         # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
         new_movie_title_escaped = cgi.escape(new_movie_title, quote=True)
@@ -227,6 +230,7 @@ class Login(Handler):
         else:
             self.login_user(user)
             self.redirect("/")
+            return
 
 
 class Logout(Handler):
@@ -235,6 +239,7 @@ class Logout(Handler):
         """ User is trying to log out """
         self.logout_user()
         self.redirect("/login")
+        return
 
 
 class Register(Handler):
@@ -314,6 +319,7 @@ class Register(Handler):
             self.response.out.write(response)
         else:
             self.redirect('/')
+            return
 
 
 app = webapp2.WSGIApplication([
