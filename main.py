@@ -105,18 +105,6 @@ class MovieRatings(webapp2.RequestHandler):
         content = t.render(movies = getWatchedMovies())
         self.response.write(content)
 
-    # TODO 2
-    # implement a post method inside this class
-    # it should render the rating-confirmation.html template
-
-
-
-# TODO 1
-# Make a template called rating-confirmation.html
-# It should show a confirmation message like:
-#    "You gave Lord of the Rings a rating of ****"
-
-
 
 app = webapp2.WSGIApplication([
     ('/', Index),
