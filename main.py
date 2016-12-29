@@ -30,8 +30,8 @@ class Index(webapp2.RequestHandler):
 
     def get(self):
         t = jinja_env.get_template("edit.html")
-        response = t.render(watchlist=getCurrentWatchlist(), error=self.request.get("error"))
-        self.response.write(response)
+        content = t.render(watchlist=getCurrentWatchlist(), error=self.request.get("error"))
+        self.response.write(content)
 
 class AddMovie(webapp2.RequestHandler):
     """ Handles requests coming in to '/add'
@@ -83,8 +83,8 @@ class CrossOffMovie(webapp2.RequestHandler):
 
         # render confirmation page
         t = jinja_env.get_template("cross-off.html")
-        response = t.render(crossed_off_movie=crossed_off_movie)
-        self.response.write(response)
+        content = t.render(crossed_off_movie=crossed_off_movie)
+        self.response.write(content)
 
 
 app = webapp2.WSGIApplication([
