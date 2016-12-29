@@ -48,8 +48,8 @@ class Index(webapp2.RequestHandler):
         # text box (<input type="text"/>)
 
 
-        response = page_header + edit_header + add_form + page_footer
-        self.response.write(response)
+        content = page_header + edit_header + add_form + page_footer
+        self.response.write(content)
 
 
 class AddMovie(webapp2.RequestHandler):
@@ -65,8 +65,8 @@ class AddMovie(webapp2.RequestHandler):
         new_movie_element = "<strong>" + new_movie + "</strong>"
         sentence = new_movie_element + " has been added to your Watchlist!"
 
-        response = page_header + "<p>" + sentence + "</p>" + page_footer
-        self.response.write(response)
+        content = page_header + "<p>" + sentence + "</p>" + page_footer
+        self.response.write(content)
 
 
 # TODO 2
