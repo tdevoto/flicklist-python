@@ -36,8 +36,8 @@ class Index(webapp2.RequestHandler):
 
     def get(self):
         t = jinja_env.get_template("edit.html")
-        response = t.render(movies=getUnwatchedMovies(), error=self.request.get("error"))
-        self.response.write(response)
+        content = t.render(movies=getUnwatchedMovies(), error=self.request.get("error"))
+        self.response.write(content)
 
 class AddMovie(webapp2.RequestHandler):
     """ Handles requests coming in to '/add'
@@ -62,8 +62,8 @@ class AddMovie(webapp2.RequestHandler):
 
         # render the confirmation message
         t = jinja_env.get_template("add-confirmation.html")
-        response = t.render(movie = new_movie_escaped)
-        self.response.write(response)
+        content = t.render(movie = new_movie_escaped)
+        self.response.write(content)
 
 
 class WatchedMovie(webapp2.RequestHandler):
@@ -92,8 +92,8 @@ class WatchedMovie(webapp2.RequestHandler):
 
         # render confirmation page
         t = jinja_env.get_template("watched-it-confirmation.html")
-        response = t.render(movie = watched_movie)
-        self.response.write(response)
+        content = t.render(movie = watched_movie)
+        self.response.write(content)
 
 
 app = webapp2.WSGIApplication([
