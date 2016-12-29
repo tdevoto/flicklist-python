@@ -43,10 +43,10 @@ class Index(Handler):
     def get(self):
         unwatched_movies = db.GqlQuery("SELECT * FROM Movie where watched = False")
         t = jinja_env.get_template("frontpage.html")
-        response = t.render(
+        content = t.render(
                         movies = unwatched_movies,
                         error = self.request.get("error"))
-        self.response.write(response)
+        self.response.write(content)
 
 class AddMovie(Handler):
     """ Handles requests coming in to '/add'
@@ -75,8 +75,8 @@ class AddMovie(Handler):
 
         # render the confirmation message
         t = jinja_env.get_template("add-confirmation.html")
-        response = t.render(movie = movie)
-        self.response.write(response)
+        content = t.render(movie = movie)
+        self.response.write(content)
 
 
 class WatchedMovie(Handler):
@@ -105,8 +105,8 @@ class WatchedMovie(Handler):
 
         # render confirmation page
         t = jinja_env.get_template("watched-it-confirmation.html")
-        response = t.render(movie = watched_movie)
-        self.response.write(response)
+        content = t.render(movie = watched_movie)
+        self.response.write(content)
 
 
 class MovieRatings(Handler):
@@ -114,8 +114,8 @@ class MovieRatings(Handler):
     def get(self):
         watched_movies = db.GqlQuery("SELECT * FROM Movie where watched = True order by created desc")
         t = jinja_env.get_template("ratings.html")
-        response = t.render(movies = watched_movies)
-        self.response.write(response)
+        content = t.render(movies = watched_movies)
+        self.response.write(content)
 
     def post(self):
         rating = self.request.get("rating")
@@ -129,8 +129,8 @@ class MovieRatings(Handler):
 
             # render confirmation
             t = jinja_env.get_template("rating-confirmation.html")
-            response = t.render(movie = movie)
-            self.response.write(response)
+            content = t.render(movie = movie)
+            self.response.write(content)
         else:
             self.renderError(400)
 
