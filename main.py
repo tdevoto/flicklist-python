@@ -11,10 +11,10 @@ class Index(webapp2.RequestHandler):
         movie = self.getRandomMovie()
 
         # build the response string
-        response = "<h1>Movie of the Day</h1>"
-        response += "<p>" + movie + "</p>"
+        content = "<h1>Movie of the Day</h1>"
+        content += "<p>" + movie + "</p>"
 
-        self.response.write(response)
+        self.response.write(content)
 
 app = webapp2.WSGIApplication([
     ('/', Index)
