@@ -88,8 +88,8 @@ class Index(webapp2.RequestHandler):
 
         # combine all the pieces to build the content of our response
         main_content = edit_header + add_form + crossoff_form + error_element
-        response = page_header + main_content + page_footer
-        self.response.write(response)
+        content = page_header + main_content + page_footer
+        self.response.write(content)
 
 
 class AddMovie(webapp2.RequestHandler):
@@ -115,8 +115,8 @@ class AddMovie(webapp2.RequestHandler):
         # build response content
         new_movie_element = "<strong>" + new_movie + "</strong>"
         sentence = new_movie_element + " has been added to your Watchlist!"
-        response = page_header + "<p>" + sentence + "</p>" + page_footer
-        self.response.write(response)
+        content = page_header + "<p>" + sentence + "</p>" + page_footer
+        self.response.write(content)
 
 
 class CrossOffMovie(webapp2.RequestHandler):
@@ -142,8 +142,8 @@ class CrossOffMovie(webapp2.RequestHandler):
         # if we didn't redirect by now, then all is well
         crossed_off_movie_element = "<strike>" + crossed_off_movie + "</strike>"
         confirmation = crossed_off_movie_element + " has been crossed off your Watchlist."
-        response = page_header + "<p>" + confirmation + "</p>" + page_footer
-        self.response.write(response)
+        content = page_header + "<p>" + confirmation + "</p>" + page_footer
+        self.response.write(content)
 
 
 app = webapp2.WSGIApplication([
