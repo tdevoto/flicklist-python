@@ -39,15 +39,6 @@ class Index(webapp2.RequestHandler):
         </form>
         """
 
-        # TODO 1
-        # Include another form so the user can "cross off" a movie from their list.
-
-
-        # TODO 4 (Extra Credit)
-        # modify your form to use a dropdown (<select>) instead a
-        # text box (<input type="text"/>)
-
-
         content = page_header + edit_header + add_form + page_footer
         self.response.write(content)
 
@@ -69,15 +60,6 @@ class AddMovie(webapp2.RequestHandler):
         self.response.write(content)
 
 
-# TODO 2
-# Create a new RequestHandler class called CrossOffMovie, to receive and
-# handle the request from your 'cross-off' form. The user should see a message like:
-# "Star Wars has been crossed off your watchlist".
-
-
-
-# TODO 3
-# Include a route for your cross-off handler, by adding another tuple to the list below.
 app = webapp2.WSGIApplication([
     ('/', Index),
     ('/add', AddMovie)
