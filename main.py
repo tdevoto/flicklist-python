@@ -57,8 +57,8 @@ class Index(webapp2.RequestHandler):
         """
 
         page_content = edit_header + add_form + crossoff_form
-        response = page_header + page_content + page_footer
-        self.response.write(response)
+        content = page_header + page_content + page_footer
+        self.response.write(content)
 
 
 class AddMovie(webapp2.RequestHandler):
@@ -74,8 +74,8 @@ class AddMovie(webapp2.RequestHandler):
         new_movie_element = "<strong>" + new_movie + "</strong>"
         sentence = new_movie_element + " has been added to your Watchlist!"
 
-        response = page_header + "<p>" + sentence + "</p>" + page_footer
-        self.response.write(response)
+        content = page_header + "<p>" + sentence + "</p>" + page_footer
+        self.response.write(content)
 
 
 
@@ -92,8 +92,8 @@ class CrossOffMovie(webapp2.RequestHandler):
         crossed_off_movie_element = "<strike>" + crossed_off_movie + "</strike>"
         confirmation = crossed_off_movie_element + " has been crossed off your Watchlist."
 
-        response = page_header + "<p>" + confirmation + "</p>" + page_footer
-        self.response.write(response)
+        content = page_header + "<p>" + confirmation + "</p>" + page_footer
+        self.response.write(content)
 
 
 app = webapp2.WSGIApplication([
