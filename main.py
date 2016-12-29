@@ -36,10 +36,10 @@ class Index(webapp2.RequestHandler):
 
     def get(self):
         t = jinja_env.get_template("frontpage.html")
-        response = t.render(
+        content = t.render(
                         movies = getUnwatchedMovies(),
                         error = self.request.get("error"))
-        self.response.write(response)
+        self.response.write(content)
 
 class AddMovie(webapp2.RequestHandler):
     """ Handles requests coming in to '/add'
@@ -64,8 +64,8 @@ class AddMovie(webapp2.RequestHandler):
 
         # render the confirmation message
         t = jinja_env.get_template("add-confirmation.html")
-        response = t.render(movie = new_movie_escaped)
-        self.response.write(response)
+        content = t.render(movie = new_movie_escaped)
+        self.response.write(content)
 
 
 class WatchedMovie(webapp2.RequestHandler):
@@ -75,7 +75,7 @@ class WatchedMovie(webapp2.RequestHandler):
 
     def renderError(self, error_code):
         self.error(error_code)
-        self.response.write("Oops! Something went wrong.")
+        self.content.write("Oops! Something went wrong.")
 
 
     def post(self):
@@ -94,16 +94,16 @@ class WatchedMovie(webapp2.RequestHandler):
 
         # render confirmation page
         t = jinja_env.get_template("watched-it-confirmation.html")
-        response = t.render(movie = watched_movie)
-        self.response.write(response)
+        content = t.render(movie = watched_movie)
+        self.response.write(content)
 
 
 class MovieRatings(webapp2.RequestHandler):
 
     def get(self):
         t = jinja_env.get_template("ratings.html")
-        response = t.render(movies = getWatchedMovies())
-        self.response.write(response)
+        content = t.render(movies = getWatchedMovies())
+        self.response.write(content)
 
     # TODO 2
     # implement a post method inside this class
