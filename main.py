@@ -75,7 +75,7 @@ class WatchedMovie(webapp2.RequestHandler):
 
     def renderError(self, error_code):
         self.error(error_code)
-        self.content.write("Oops! Something went wrong.")
+        self.response.write("Oops! Something went wrong.")
 
 
     def post(self):
