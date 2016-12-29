@@ -16,15 +16,15 @@ class Index(webapp2.RequestHandler):
     def get(self):
         # add Movie of the Day to the response string
         movie = self.getRandomMovie()
-        response = "<h1>Movie of the Day</h1>"
-        response += "<p>" + movie + "</p>"
+        content = "<h1>Movie of the Day</h1>"
+        content += "<p>" + movie + "</p>"
 
         # add Tomorrow's Movie to the response string
         tomorrow_movie = self.getRandomMovie()
-        response += "<h1>Tomorrow's Movie</h1>"
-        response += "<p>" + tomorrow_movie + "</p>"
+        content += "<h1>Tomorrow's Movie</h1>"
+        content += "<p>" + tomorrow_movie + "</p>"
 
-        self.response.write(response)
+        self.response.write(content)
 
 app = webapp2.WSGIApplication([
     ('/', Index)
