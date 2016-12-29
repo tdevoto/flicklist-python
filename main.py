@@ -3,10 +3,11 @@ import webapp2
 class Index(webapp2.RequestHandler):
 
     def getRandomMovie(self):
-        # for now, just return a hard-coded string
+        # still just a hard-coded string for now
         return "The Big Lebowski"
 
     def get(self):
+        # choose a movie by invoking our new function
         movie = self.getRandomMovie()
 
         # build the response string
