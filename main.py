@@ -26,7 +26,7 @@ def getUnwatchedMovies():
 def getWatchedMovies():
     """ Returns the list of movies the user has already watched """
 
-    return [ "The Matrix", "The Dawg" ]
+    return [ "The Matrix", "The Big Green" ]
 
 
 class Index(webapp2.RequestHandler):
