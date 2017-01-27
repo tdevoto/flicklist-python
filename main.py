@@ -85,10 +85,8 @@ class Index(webapp2.RequestHandler):
         # if we have an error, make a <p> to display it
         error = self.request.get("error")
         if error:
-            error_element = (
-                '<p class="error">' +
-                cgi.escape(error, quote=True) +
-                '</p>')
+            error_esc = cgi.escape(error, quote=True)
+            error_element = '<p class="error">' + error_esc + '</p>'
         else:
             error_element = ''
 
