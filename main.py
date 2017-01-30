@@ -36,9 +36,8 @@ class Index(webapp2.RequestHandler):
 
     def get(self):
         t = jinja_env.get_template("frontpage.html")
-        content = t.render(
-                        movies = getUnwatchedMovies(),
-                        error = self.request.get("error"))
+        error = cgi.escape(self.request.get("error"), quote=True)
+        content = t.render(movies=getUnwatchedMovies(), error=error)
         self.response.write(content)
 
 class AddMovie(webapp2.RequestHandler):
