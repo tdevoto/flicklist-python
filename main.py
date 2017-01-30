@@ -30,7 +30,8 @@ class Index(webapp2.RequestHandler):
 
     def get(self):
         t = jinja_env.get_template("edit.html")
-        content = t.render(watchlist=getCurrentWatchlist(), error=self.request.get("error"))
+        error = cgi.escape(self.request.get("error"), quote=True)
+        content = t.render(watchlist=getCurrentWatchlist(), error=error)
         self.response.write(content)
 
 class AddMovie(webapp2.RequestHandler):
@@ -79,6 +80,7 @@ class CrossOffMovie(webapp2.RequestHandler):
 
             # redirect to homepage, and include error as a query parameter in the URL
             self.redirect("/?error=" + error)
+
 
         # render confirmation page
         t = jinja_env.get_template("cross-off.html")
