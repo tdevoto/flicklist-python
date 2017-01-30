@@ -44,12 +44,12 @@ class AddMovie(webapp2.RequestHandler):
         # if the user typed nothing at all, redirect and yell at them
         if (not new_movie) or (new_movie.strip() == ""):
             error = "Please specify the movie you want to add."
-            self.redirect("/?error=" + cgi.escape(error))
+            self.redirect("/?error=" + error)
 
         # if the user wants to add a terrible movie, redirect and yell at them
         if new_movie in terrible_movies:
             error = "Trust me, you don't want to add '{0}' to your Watchlist.".format(new_movie)
-            self.redirect("/?error=" + cgi.escape(error, quote=True))
+            self.redirect("/?error=" + error)
 
         # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
         new_movie_escaped = cgi.escape(new_movie, quote=True)
@@ -70,16 +70,15 @@ class CrossOffMovie(webapp2.RequestHandler):
 
         if not crossed_off_movie or crossed_off_movie.strip() == "":
             error = "Please specify a movie to cross off."
-            self.redirect("/?error=", cgi.escape(error))
+            self.redirect("/?error=" + error)
 
         # if user tried to cross off a movie that is not in their list, reject
         if not (crossed_off_movie in getCurrentWatchlist()):
             # make a helpful error message
             error = "'{0}' is not in your Watchlist, so you can't cross it off!".format(crossed_off_movie)
-            error_escaped = cgi.escape(error, quote=True)
 
             # redirect to homepage, and include error as a query parameter in the URL
-            self.redirect("/?error=" + error_escaped)
+            self.redirect("/?error=" + error)
 
         # render confirmation page
         t = jinja_env.get_template("cross-off.html")
