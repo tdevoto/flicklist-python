@@ -1,7 +1,5 @@
 import webapp2, cgi, jinja2, os, re
 from google.appengine.ext import db
-import hashutils
-
 
 # set up jinja
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
@@ -15,19 +13,10 @@ terrible_movies = [
     "Nine Lives"
 ]
 
-# a list of pages that anyone is allowed to visit
-# (any others require logging in)
-allowed_routes = [
-    "/login",
-    "/logout",
-    "/register"
-]
-
-
 class User(db.Model):
     """ Represents a user on our site """
     username = db.StringProperty(required = True)
-    pw_hash = db.StringProperty(required = True)
+    password = db.StringProperty(required = True)
 
 
 class Movie(db.Model):
@@ -47,44 +36,6 @@ class Handler(webapp2.RequestHandler):
         """ Sends an HTTP error code and a generic "oops!" message to the client. """
         self.error(error_code)
         self.response.write("Oops! Something went wrong.")
-
-    def login_user(self, user):
-        """ Logs in a user specified by a User object """
-        user_id = user.key().id()
-        self.set_secure_cookie('user_id', str(user_id))
-
-    def logout_user(self):
-        """ Logs out the current user """
-        self.set_secure_cookie('user_id', '')
-
-    def read_secure_cookie(self, name):
-        """ Returns the value associated with a name in the user's cookie,
-            or returns None, if no value was found or the value is not valid
-        """
-        cookie_val = self.request.cookies.get(name)
-        if cookie_val:
-            return hashutils.check_secure_val(cookie_val)
-
-    def set_secure_cookie(self, name, val):
-        """ Adds a secure name-value pair cookie to the response """
-        cookie_val = hashutils.make_secure_val(val)
-        self.response.headers.add_header('Set-Cookie', '%s=%s; Path=/' % (name, cookie_val))
-
-    def initialize(self, *a, **kw):
-        """ Any subclass of webapp2.RequestHandler can implement a method called 'initialize'
-            to specify what should happen before handling a request.
-
-            Here, we use it to ensure that the user is logged in.
-            If not, and they try to visit a page that requires logging in (like /ratings),
-            then we redirect them to the /login page
-        """
-        webapp2.RequestHandler.initialize(self, *a, **kw)
-        uid = self.read_secure_cookie('user_id')
-        self.user = uid and User.get_by_id(int(uid))
-
-        if not self.user and self.request.path not in allowed_routes:
-            self.redirect('/login')
-            return
 
     def get_user_by_name(self, username):
         """ Given a username, try to fetch the user from the database """
@@ -107,7 +58,8 @@ class Index(Handler):
         t = jinja_env.get_template("frontpage.html")
         content = t.render(
                         movies = unwatched_movies,
-                        error = self.request.get("error"))
+                        error = self.request.get("error"),
+                        message = self.request.get("message"))
         self.response.write(content)
 
 
@@ -225,21 +177,11 @@ class Login(Handler):
         user = self.get_user_by_name(submitted_username)
         if not user:
             self.render_login_form(error = "Invalid username")
-        elif not hashutils.valid_pw(submitted_username, submitted_password, user.pw_hash):
+        elif submitted_password != user.password:
             self.render_login_form(error = "Invalid password")
         else:
-            self.login_user(user)
-            self.redirect("/")
+            self.redirect("/?message=Welcome " + user.username + "!")
             return
-
-
-class Logout(Handler):
-
-    def get(self):
-        """ User is trying to log out """
-        self.logout_user()
-        self.redirect("/login")
-        return
 
 
 class Register(Handler):
@@ -296,11 +238,8 @@ class Register(Handler):
             has_error = True
         elif (username and password and verify):
             # create new user object
-            pw_hash = hashutils.make_pw_hash(username, password)
-            user = User(username=username, pw_hash=pw_hash)
+            user = User(username=username, password=password)
             user.put()
-
-            self.login_user(user)
         else:
             has_error = True
 
@@ -328,6 +267,5 @@ app = webapp2.WSGIApplication([
     ('/watched-it', WatchedMovie),
     ('/ratings', MovieRatings),
     ('/login', Login),
-    ('/logout', Logout),
     ('/register', Register)
 ], debug=True)
